@@ -1,5 +1,5 @@
 var iconFeature = new ol.Feature({
-    geometry: new ol.geom.Point([100, 100]),
+    geometry: new ol.geom.Point([0, 0]),
     name: 'Null Island',
     population: 4000,
     rainfall: 500
