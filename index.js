@@ -1,23 +1,16 @@
-import 'ol/ol.css';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import {defaults as defaultControls, Attribution} from 'ol/control';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
 
-var attribution = new Attribution({
+var attribution = new ol.Attribution({
     collapsible: false
 });
-var map = new Map({
+var map = new ol.Map({
     layers: [
-        new TileLayer({
-            source: new OSM()
-        })
+        new ol.layer.Tile({
+            source: new ol.source.OSM()
         })
     ],
-    controls: defaultControls({attribution: false}).extend([attribution]),
+    // controls: defaultControls({attribution: false}).extend([attribution]),
     target: 'map',
-    view: new View({
+    view: new ol.View({
         center: [0, 0],
         zoom: 2
     })
@@ -25,8 +18,8 @@ var map = new Map({
 
 function checkSize() {
     var small = map.getSize()[0] < 600;
-    attribution.setCollapsible(small);
-    attribution.setCollapsed(small);
+    // attribution.setCollapsible(small);
+    // attribution.setCollapsed(small);
 }
 
 window.addEventListener('resize', checkSize);
