@@ -1,24 +1,30 @@
 var iconFeature = new ol.Feature({
-    geometry: new ol.geom.Point([0, 0]),
-    name: 'Null Island',
-    population: 4000,
-    rainfall: 500
+    geometry: new ol.geom.Point(ol.proj.fromLonLat([0, 0])),
+    name: 'Evenaar',
+    id: 1
+});
+
+var iconFeature1 = new ol.Feature({
+    geometry: new ol.geom.Point(ol.proj.fromLonLat([6.534853, 53.240570])),
+    name: 'Hanze Hogeschool',
+    id: 2
 });
 
 var iconStyle = new ol.style.Style({
     image: new ol.style.Icon({
-        anchor: [0.5, 546],
+        anchor: [0.5, 1],
         anchorXUnits: 'fraction',
-        anchorYUnits: 'pixels',
+        anchorYUnits: 'fraction',
         src: 'pointer-transparent-red-1.png',
         scale: 0.08
     })
 });
 
 iconFeature.setStyle(iconStyle);
+iconFeature1.setStyle(iconStyle);
 
 var vectorSource = new ol.source.Vector({
-    features: [iconFeature]
+    features: [iconFeature, iconFeature1]
 });
 
 var vectorLayer = new ol.layer.Vector({
@@ -45,18 +51,30 @@ var element = document.getElementById('popup');
 
 var popup = new ol.Overlay({
     element: element,
-    positioning: 'bottom-center',
+    positioning: 'bottom-centesr',
     stopEvent: false,
     offset: [0, -45]
 });
 map.addOverlay(popup);
 
+// Variable for checking the content values, in case of refreshing
+var prevPopup = null;
+
 // display popup on click
 map.on('click', function(evt) {
+    var currentStation = document.getElementById('currentStation');
+
     var feature = map.forEachFeatureAtPixel(evt.pixel,
         function(feature) {
             return feature;
         });
+
+    if (feature != null) {
+        if (prevPopup != feature.get("name") && prevPopup != null) {
+            $(element).popover("dispose");
+        }
+    }
+
     if (feature) {
         var coordinates = feature.getGeometry().getCoordinates();
         popup.setPosition(coordinates);
@@ -65,19 +83,31 @@ map.on('click', function(evt) {
             html: true,
             content: feature.get('name')
         });
+        prevPopup = feature.get('name')
+        currentStation.value = feature.get('id');
+        eventChange();
+
         $(element).popover('show');
     } else {
-        $(element).popover('destroy');
+        $(element).popover('dispose');
+        document.getElementById('currentStation').value = 0;
+        eventChange();
     }
 });
 
 // change mouse cursor when over marker
 map.on('pointermove', function(e) {
     if (e.dragging) {
-        $(element).popover('destroy');
+        $(element).popover('dispose');
+        document.getElementById('currentStation').value = 0;
+        eventChange();
         return;
     }
     var pixel = map.getEventPixel(e.originalEvent);
     var hit = map.hasFeatureAtPixel(pixel);
     map.getTarget().style.cursor = hit ? 'pointer' : '';
 });
+
+function eventChange() {
+    currentStation.dispatchEvent(new Event('change'));
+}
