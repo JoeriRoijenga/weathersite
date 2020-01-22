@@ -39,10 +39,16 @@
 </head>
 <body>
 <?php
+$err = 0;
 include 'database.php';
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 	// todo: input sanitizen!
-	$input_username = $_POST['username'];
+	if (ctype_alnum($_POST['username'])) {
+		$input_username = $_POST['username'];
+	} else {
+		$err = 1;
+	}
+	
 	$input_password = $_POST['password'];
 
 	$sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
@@ -53,7 +59,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
    		$_SESSION['priv_level'] = $data['priv_level'];
    		header("Location: ../index.php");
    	} else {
-   		echo 'Invalid password.';
+   		$err = 1;
    	}		
 };
 ?>
@@ -67,6 +73,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 		<label>Password:</label><br>
 		<input type="password" name="password" placeholder="Enter password"><br><br>
 		<button type="submit">Log In</button>
+		<label style="color:red"><?php if($err == 1) { echo "Invalid login";}?></label>
 	</form>
 </div>
 </div>
