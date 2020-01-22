@@ -5,9 +5,14 @@
   <title>ABCWeather: Admin</title>
 </head>
 <body>
-  <?php
-    phpinfo();l
-  ?>
+<?php
+session_start();
+if ($_SESSION['priv_level'] != 2) {
+  header("Location: ../login.php");
+}
+echo "Hi, admin!";
+
+?>
 </body>
 </html>
 

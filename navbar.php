@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!empty($_SESSION)){
+$username = $_SESSION['username'];
+$priv_level = $_SESSION['priv_level'];
+}
+?>
+
 <style>
 ul {
   list-style-type: none;
@@ -26,6 +34,19 @@ li a:hover {
 <ul id="nav">
 	<li><a href="index.php">Home</a></li>
 	<li><a href="precipitation.php">Precipitation</a></li>
- 	<li style="float:right"><a href="account.php">Account</a></li>
- 	<li style="float:right"><a href="admin/index.php">Admin</a></li>
+ 	
+ 	
+  <?php
+  if (isset($username)) {
+    echo '<li style="float:right"><a href="logout.php">Logout</a></li>' ;
+    echo '<li style="float:right"><a href="account.php">Account</a></li>';
+    
+  } else {
+   echo '<li style="float:right"><a href="login.php">Login</a></li>' ;
+  }
+  if ($priv_level == 2) {
+    echo '<li style="float:right"><a href="admin/index.php">Admin</a></li>';
+  }
+  ?>
+  
 </ul>
