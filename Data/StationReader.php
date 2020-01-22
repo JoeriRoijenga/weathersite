@@ -5,9 +5,8 @@ namespace Data;
 class StationReader extends Reader
 {
 
-    public function __construct()
-    {
-        parent::__construct("D:/hanze/leertaak-2/out/");
+    public function __construct(){
+        parent::__construct(__DIR__);
     }
 
     protected function getColumns(){

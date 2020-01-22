@@ -26,15 +26,15 @@ abstract class Reader
         foreach ($this->filters as $filter){
             switch ($filter[1]){
                 case '>=':
-                    if ($this->getColumn($filter, $base, $filter[0]) < $filter[2])
+                    if ($this->getColumn($file, $base, $filter[0]) < $filter[2])
                         return false;
                     break;
                 case '<=':
-                    if ($this->getColumn($filter, $base, $filter[0]) > $filter[2])
+                    if ($this->getColumn($file, $base, $filter[0]) > $filter[2])
                         return false;
                     break;
                 case '=':
-                    if ($this->getColumn($filter, $base, $filter[0]) != $filter[2])
+                    if ($this->getColumn($file, $base, $filter[0]) != $filter[2])
                         return false;
                     break;
             }
@@ -64,7 +64,7 @@ abstract class Reader
         $this->filters[] = [$name, $condition, $value];
     }
 
-    public final function read($file, $columns = false){
+    public final function read($file, $columns = false, $key = false){
         $results = [];
         if (!$columns){
             $columns = array_keys($this->columns);
@@ -81,7 +81,11 @@ abstract class Reader
                 foreach ($columns as $column){
                     $result[$column] = $this->getColumn($file, $base, $column);
                 }
-                $results[] = $result;
+                if ($key == false || $this->getColumn($file, $base, $key) == false){
+                    $results[] = $result;
+                }else{
+                    $results[$this->getColumn($file, $base, $key)] = $result;
+                }
             }
             $base += $this->length;
         }

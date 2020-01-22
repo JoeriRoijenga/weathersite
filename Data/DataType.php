@@ -61,7 +61,7 @@ class DataType
                 $negative = false;
                 if ($this->signed && $byteArray[1] & 0x80){
                     $negative = true;
-                    $byteArray[0] &= 0x7f;
+                    $byteArray[1] &= 0x7f;
                 }
 
                 $shift = 0;
