@@ -9,7 +9,7 @@
 			font-family: ABCSans;
 		}
 		body, html {
-  			height: 100%;
+  			height: 90%;
   			display: grid;
 		}
 		#login-box {
@@ -39,6 +39,10 @@
 </head>
 <body>
 <?php
+session_start();
+if (!empty($_SESSION)){
+	header("Location: ../index.php");
+}
 $err = 0;
 include 'database.php';
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
@@ -54,7 +58,6 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 	$sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
 	$data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);
 	if (password_verify($input_password, $data["password"])) {
-   		session_start();
    		$_SESSION['username'] = $data['username'];
    		$_SESSION['priv_level'] = $data['priv_level'];
    		header("Location: ../index.php");
@@ -69,7 +72,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 	<h1>Login</h1>
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 		<label>Username:</label><br>
-		<input type="text" name="username" placeholder="Enter username"><br>
+		<input type="text" name="username" placeholder="Enter username" autofocus="true"><br>
 		<label>Password:</label><br>
 		<input type="password" name="password" placeholder="Enter password"><br><br>
 		<button type="submit">Log In</button>
