@@ -2,7 +2,8 @@
 
 namespace Routing;
 
-class Route{
+class Route
+{
 
     private $controller;
     private $method;

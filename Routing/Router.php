@@ -2,7 +2,8 @@
 
 namespace Routing;
 
-class Router{
+class Router
+{
 
     const GET = 'GET';
     const POST = 'POST';

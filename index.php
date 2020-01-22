@@ -1,6 +1,6 @@
 <?php
 
-use Controllers\HomeController;
+use Controllers\ApiController;
 use Routing\Router;
 
 spl_autoload_register(function($className) {
@@ -12,7 +12,7 @@ spl_autoload_register(function($className) {
 $router = new Router();
 
 // Option 1 register url with controller class and method
-$router->register('', HomeController::class, "home");
+$router->register('', ApiController::class, "index");
 
 // Option 2 Route with controller method params
 //$router->register('home/?/?', HomeController::class, "home");
