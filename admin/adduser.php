@@ -15,7 +15,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 	$input_priv = $_POST['priv'];
 
 	$sql = "INSERT INTO users(username, password, priv_level) VALUES('$input_username', '$input_password', $input_priv)";
-	$data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);	
+	mysqli_query($db, $sql);	
 }
 ?>
 
@@ -23,11 +23,15 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 		<label>Username:</label><br>
 		<input type="text" name="username" placeholder="Enter username" autofocus="true"><br>
-		<label>Privilege:</label><br>
-		<input type="text" name="priv" placeholder="Enter privilege level"><br>
 		<label>Password:</label><br>
 		<input type="password" name="password" placeholder="Enter password"><br><br>
-		<button type="submit">Log In</button>
+		<label>Privilege:</label><br>
+		<select name="priv">
+			<option value=0>Guest</option>
+			<option value=1>User</option>
+			<option value=2>Admin</option>
+		</select>
+		<button type="submit">Add</button>
 		<label style="color:red"><?php if($err == 1) { echo "Invalid login";}?></label>
 	</form>
 </body>
