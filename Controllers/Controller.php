@@ -35,7 +35,12 @@ abstract class Controller
         }
     }
 
-    protected function html($file){
+    protected function html($file, $variables = []){
+
+        foreach ($variables as $key => $value){
+            $$key = $value;
+        }
+
         include __DIR__ . '\..\Views\\' . $file . '.php';
     }
 

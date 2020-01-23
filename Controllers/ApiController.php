@@ -32,7 +32,7 @@ class ApiController extends Controller
         echo json_encode([
             'items' => $results,
             'amount' => count($results)
-        ]);
+        ], JSON_UNESCAPED_SLASHES);
     }
 
 }
