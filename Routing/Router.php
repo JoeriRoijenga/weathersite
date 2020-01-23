@@ -15,7 +15,7 @@ class Router
     }
 
     public function match(){
-        $url = $_GET['req'] ?? '/';
+        $url = $_GET['req'] ?? '';
         $httpMethod = strtoupper(filter_input( \INPUT_SERVER, 'REQUEST_METHOD', \FILTER_SANITIZE_SPECIAL_CHARS));
 
         foreach ($this->routes as $route => $method){

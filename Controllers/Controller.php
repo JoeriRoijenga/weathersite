@@ -41,7 +41,7 @@ abstract class Controller
             $$key = $value;
         }
 
-        include __DIR__ . '\..\Views\\' . $file . '.php';
+        include __DIR__ . '/../Views/' . $file . '.php';
     }
 
 }
