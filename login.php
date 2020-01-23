@@ -17,11 +17,9 @@
 		}
 		#form-box {
 			padding: 20px;
-  			
   			background-color: #d9d9d9;
   			border-radius: 10px;
    		}
-
    		#logo-text {
 			font-family: ABCSans-Black;
 			font-size: 80px;
@@ -46,7 +44,6 @@ if (!empty($_SESSION)){
 $err = 0;
 include 'database.php';
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-	// todo: input sanitizen!
 	if (ctype_alnum($_POST['username'])) {
 		$input_username = $_POST['username'];
 	} else {
