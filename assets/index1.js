@@ -15,7 +15,7 @@ var iconStyle = new ol.style.Style({
         anchor: [0.5, 1],
         anchorXUnits: 'fraction',
         anchorYUnits: 'fraction',
-        src: 'pointer-transparent-red-1.png',
+        src: 'assets/pointer-transparent-red-1.png',
         scale: 0.08
     })
 });

@@ -12,7 +12,7 @@ spl_autoload_register(function($className) {
 
 $router = new Router();
 
-$router->register('', HomeController::class, "home");
+$router->register('/', HomeController::class, "home");
 
 // API routes
 $router->register('/api/v1/stations', ApiController::class, 'stations');

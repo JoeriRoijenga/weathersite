@@ -11,8 +11,6 @@ abstract class Reader
     private $filters = [];
     private $temp_cache = false;
 
-    protected abstract function getColumns();
-
     protected function __construct($root){
         $this->root = $root;
         $this->columns = $this->getColumns();
@@ -21,6 +19,9 @@ abstract class Reader
         }
     }
 
+    protected abstract function getColumns();
+
+    protected abstract function getFiles();
 
     private function checkFilters($file, $base){
         foreach ($this->filters as $filter){
@@ -44,6 +45,10 @@ abstract class Reader
         return true;
     }
 
+    protected function getFilters(){
+        return $this->filters;
+    }
+
     private function getColumn($file, $base, $name){
         if (!array_key_exists($name, $this->columns)){
             return false;
@@ -60,16 +65,7 @@ abstract class Reader
         return $type->decodeValue($value);
     }
 
-    public final function addFilter($name, $condition, $value){
-        $this->filters[] = [$name, $condition, $value];
-    }
-
-    public final function read($file, $columns = false, $key = false){
-        $results = [];
-        if (!$columns){
-            $columns = array_keys($this->columns);
-        }
-
+    protected final function read(&$results, $file, $columns, $key){
         $doFilter = count($this->filters) > 0;
         $file = fopen($this->root . $file, "r");
         $size = fstat($file)['size'];
@@ -91,8 +87,23 @@ abstract class Reader
         }
         fclose($file);
         $this->temp_cache = false;
-        return $results;
     }
 
+    public final function addFilter($name, $condition, $value){
+        $this->filters[] = [$name, $condition, $value];
+    }
+
+    public final function readData($columns = false, $key = false){
+        if (!$columns){
+            $columns = array_keys($this->columns);
+        }
+
+        $results = [];
+        foreach ($this->getFiles() as $file){
+            $this->read($results, $file, $columns, $key);
+        }
+
+        return $results;
+    }
 
 }

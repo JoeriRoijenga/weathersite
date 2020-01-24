@@ -24,15 +24,14 @@ class ApiController extends Controller
             }
         }
 
-        $results = $reader->read("/stations.dat", [
+        $results = $reader->readData([
             'name', 'latitude', 'longitude'
         ], 'id');
 
-        header('Content-Type: application/json');
-        echo json_encode([
-            'items' => $results,
-            'amount' => count($results)
-        ], JSON_UNESCAPED_SLASHES);
+        $this->json([
+            'items' => $results ?? [],
+            'amount' => count($results ?? [])
+        ]);
     }
 
 }
