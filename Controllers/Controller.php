@@ -35,6 +35,11 @@ abstract class Controller
         }
     }
 
+    protected function json($object){
+        header('Content-Type: application/json');
+        echo json_encode($object, JSON_UNESCAPED_SLASHES);
+    }
+
     protected function html($file, $variables = []){
 
         foreach ($variables as $key => $value){
