@@ -25,8 +25,8 @@ class ApiController extends Controller
         }
 
         $results = $reader->read("/stations.dat", [
-            'name', 'latitude', 'longitude'
-        ], 'id');
+            'id', 'name', 'latitude', 'longitude'
+        ]);
 
         header('Content-Type: application/json');
         echo json_encode([
