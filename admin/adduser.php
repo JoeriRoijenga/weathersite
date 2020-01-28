@@ -9,6 +9,7 @@
 include '../database.php';
 include 'adminsession.php';
 $err = 0;
+
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 	$input_username = $_POST['username'];
 	$input_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -22,7 +23,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 <h1>Add user:</h1>
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
 		<label>Username:</label><br>
-		<input type="text" name="username" placeholder="Enter username" autofocus="true"><br>
+		<input type='text' name='username' placeholder='Enter username' autofocus='true'><br>	
 		<label>Password:</label><br>
 		<input type="password" name="password" placeholder="Enter password"><br><br>
 		<label>Privilege:</label><br>

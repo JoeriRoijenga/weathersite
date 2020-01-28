@@ -9,6 +9,7 @@
 include 'adminsession.php';
 ?>
 <a href='adduser.php'>Add user</a><br>
+<a href='listuser.php'>List users</a>
 </body>
 </html>
 
