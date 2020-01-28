@@ -39,8 +39,7 @@ class DataType
     }
 
     public static function String(&$position, $length){
-        $type = new DataType(self::STRING, $position, $length);
-        return $type;
+        return new DataType(self::STRING, $position, $length);
     }
 
     public function getLength(){
@@ -61,11 +60,14 @@ class DataType
                 $negative = false;
                 if ($this->signed && $byteArray[1] & 0x80){
                     $negative = true;
-                    $byteArray[1] &= 0x7f;
+                    $byteArray[$this->length] -= 0b1;
                 }
 
                 $shift = 0;
                 foreach(array_reverse($byteArray) as $byte){
+                    if ($negative){
+                        $byte = $byte ^ 0xFF;
+                    }
                     $decodedValue += $byte << $shift;
                     $shift += 8;
                 }
@@ -77,6 +79,7 @@ class DataType
                 if ($this->decimals > 0){
                     $decodedValue = $decodedValue / pow(10, $this->decimals);
                 }
+
                 break;
             case self::STRING:
                 $decodedValue = '';
