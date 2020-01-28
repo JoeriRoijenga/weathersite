@@ -14,30 +14,35 @@ class Route
     {
         $this->controller = $controller;
         $this->method = $method;
-        if (is_array($httpMethod)){
+        if (is_array($httpMethod)) {
             $this->httpMethods = $httpMethod;
-        }else{
+        } else {
             $this->httpMethods = [$httpMethod];
         }
     }
 
-    public function setOptions($options){
+    public function setOptions($options)
+    {
         $this->options = $options;
     }
 
-    public function controller(){
+    public function controller()
+    {
         return $this->controller;
     }
 
-    public function method(){
+    public function method()
+    {
         return $this->method;
     }
 
-    public function httpMethods(){
+    public function httpMethods()
+    {
         return $this->httpMethods;
     }
 
-    public function options(){
+    public function options()
+    {
         return $this->options;
     }
 

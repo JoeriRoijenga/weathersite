@@ -2,6 +2,9 @@
 
 namespace Routing;
 
+use const FILTER_SANITIZE_SPECIAL_CHARS;
+use const INPUT_SERVER;
+
 class Router
 {
 
@@ -10,25 +13,27 @@ class Router
 
     private $routes = [];
 
-    public function register($url, $controller, $method, $httpMethod = self::GET){
+    public function register($url, $controller, $method, $httpMethod = self::GET)
+    {
         $this->routes[$url] = new Route($controller, $method, $httpMethod);
     }
 
-    public function match(){
+    public function match()
+    {
         $url = $_GET['req'] ?? '/';
-        if(substr($url, 0, 1) !== '/'){
+        if (substr($url, 0, 1) !== '/') {
             $url = '/' . $url;
         }
 
-        $httpMethod = strtoupper(filter_input( \INPUT_SERVER, 'REQUEST_METHOD', \FILTER_SANITIZE_SPECIAL_CHARS));
+        $httpMethod = strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_SPECIAL_CHARS));
 
-        foreach ($this->routes as $route => $method){
+        foreach ($this->routes as $route => $method) {
             $test = '/^' . preg_replace('/\?/', '([^\/]+)', preg_replace('/\//', '\/', $route)) . '$/';
-            if (preg_match($test, $url, $options)){
+            if (preg_match($test, $url, $options)) {
                 array_shift($options);
                 $routeMatch = $this->routes[$route];
 
-                if(!in_array($httpMethod, $routeMatch->httpMethods())){
+                if (!in_array($httpMethod, $routeMatch->httpMethods())) {
                     continue;
                 }
 

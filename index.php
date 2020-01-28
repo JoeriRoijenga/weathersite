@@ -4,7 +4,7 @@ use Controllers\ApiController;
 use Controllers\HomeController;
 use Routing\Router;
 
-spl_autoload_register(function($className) {
+spl_autoload_register(function ($className) {
     if (file_exists(($file = str_replace("\\", "/", $className) . '.php'))) {
         include $file;
     }
@@ -20,23 +20,16 @@ $router->register('/api/v1/station/?', ApiController::class, 'station');
 $router->register('/api/v1/weather/latest', ApiController::class, 'weather');
 
 
-// Option 2 Route with controller method params
-//$router->register('home/?/?', HomeController::class, "home");
-
-// Option 3 Specific HTTP methods
-//$router->register('anyurl', HomeController::class, "home", Router::POST);
-//$router->register('anyurl', HomeController::class, "home", [Router::GET, Router::POST]);
-
 $route = $router->match();
-if($route) {
+if ($route) {
     $className = $route->controller();
     $controller = new $className;
-    try{
+    try {
         $controller->{$route->method()}(...$route->options());
-    }catch (Exception $exception){
+    } catch (Exception $exception) {
         // @TODO handle any leftover error or error page
         include "Views/404.php";
     }
-}else{
+} else {
     include "Views/404.php";
 }

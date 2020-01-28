@@ -4,21 +4,22 @@ namespace Controllers;
 
 abstract class Controller
 {
-    protected function input($key, $filter = false){
-        if (is_array($key)){
+    protected function input($key, $filter = false)
+    {
+        if (is_array($key)) {
             $input = [];
-            foreach ($key as $index => $value){
-                if (is_numeric($index)){
+            foreach ($key as $index => $value) {
+                if (is_numeric($index)) {
                     $input[$value] = $this->input($value);
-                }else{
+                } else {
                     $input[$index] = $this->input($index, $value);
                 }
             }
             return $input;
-        }else{
+        } else {
             $value = $_GET[$key] ?? $_POST[$key] ?? false;
-            if($value !== false){
-                switch ($filter){
+            if ($value !== false) {
+                switch ($filter) {
                     case 'string':
                         $value = filter_var($value, FILTER_SANITIZE_STRING);
                         break;
@@ -35,16 +36,18 @@ abstract class Controller
         }
     }
 
-    protected function json($object, $status = 200){
+    protected function json($object, $status = 200)
+    {
         header('Content-Type: application/json');
         http_response_code($status);
         $object['status_code'] = $status;
         echo json_encode($object, JSON_UNESCAPED_SLASHES);
     }
 
-    protected function html($file, $variables = []){
+    protected function html($file, $variables = [])
+    {
 
-        foreach ($variables as $key => $value){
+        foreach ($variables as $key => $value) {
             $$key = $value;
         }
 
