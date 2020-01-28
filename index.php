@@ -16,9 +16,10 @@ $router->register('/', HomeController::class, "home");
 
 // API routes
 $router->register('/api/v1/stations', ApiController::class, 'stations');
-// /api/v1/station/{id}/weather
-// /api/v1/weather/current
-// /api/v1/weather/
+$router->register('/api/v1/station/?/weather', ApiController::class, 'stationWeather');
+
+$router->register('/api/v1/weather/weather', ApiController::class, 'weather');
+$router->register('/api/v1/weather/latest', ApiController::class, 'weatherLatest');
 
 
 // Option 2 Route with controller method params

@@ -15,13 +15,11 @@ abstract class Reader
         $this->root = $root;
         $this->columns = $this->getColumns();
         foreach ($this->columns as $name => $column){
-            $this->length += $column->getLength();
+            if ($column != null) {
+                $this->length += $column->getLength();
+            }
         }
     }
-
-    protected abstract function getColumns();
-
-    protected abstract function getFiles();
 
     private function checkFilters($file, $base){
         foreach ($this->filters as $filter){
@@ -45,11 +43,7 @@ abstract class Reader
         return true;
     }
 
-    protected function getFilters(){
-        return $this->filters;
-    }
-
-    private function getColumn($file, $base, $name){
+    protected function getColumn($file, $base, $name){
         if (!array_key_exists($name, $this->columns)){
             return false;
         }
@@ -63,6 +57,18 @@ abstract class Reader
         $value = fread($file, $type->getLength());
 
         return $type->decodeValue($value);
+    }
+
+    protected abstract function getColumns();
+
+    protected abstract function getFiles();
+
+    protected function getFilters(){
+        return $this->filters;
+    }
+
+    protected function getRoot(){
+        return $this->root;
     }
 
     protected final function read(&$results, $file, $columns, $key){
@@ -87,6 +93,10 @@ abstract class Reader
         }
         fclose($file);
         $this->temp_cache = false;
+    }
+
+    protected final function list($path){
+        return array_diff(scandir($path), ['.', '..']);
     }
 
     public final function addFilter($name, $condition, $value){
