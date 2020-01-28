@@ -9,13 +9,14 @@ class StationReader extends Reader
         parent::__construct(__DIR__);
     }
 
-    protected function getColumns(){
+    public function getColumns(){
         $pos = 0;
         return [
             'id' => DataType::Integer($pos, 3),
             'latitude' => DataType::Double($pos, 3, 3, true),
             'longitude' => DataType::Double($pos, 3, 3, true),
-            'name' => DataType::String($pos, 64)
+            'name' => DataType::String($pos, 64),
+            'category_count' => DataType::Integer($pos, 2)
         ];
     }
 

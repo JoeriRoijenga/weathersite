@@ -50,6 +50,10 @@ class DataType
         return $this->position;
     }
 
+    public function getDecimals(){
+        return $this->decimals;
+    }
+
     public function decodeValue($value){
         $decodedValue = false;
         $byteArray = unpack("C*", $value);
