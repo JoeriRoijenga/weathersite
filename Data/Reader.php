@@ -33,7 +33,16 @@ abstract class Reader
                         return false;
                     break;
                 case '=':
-                    if ($this->getColumn($file, $base, $filter[0]) != $filter[2])
+                    if (is_array($filter[2])){
+                        if (!in_array($this->getColumn($file, $base, $filter[0]), $filter[2]))
+                            return false;
+                    }else{
+                        if ($this->getColumn($file, $base, $filter[0]) != $filter[2])
+                            return false;
+                    }
+                    break;
+                case 'time':
+                    if (strtotime($this->getColumn($file, $base, $filter[0])) < $filter[2])
                         return false;
                     break;
             }
@@ -63,6 +72,10 @@ abstract class Reader
 
     protected abstract function getFiles();
 
+    protected function getStart($fileName, $size){
+        return 0;
+    }
+
     protected function getFilters(){
         return $this->filters;
     }
@@ -71,11 +84,16 @@ abstract class Reader
         return $this->root;
     }
 
-    protected final function read(&$results, $file, $columns, $key){
+    protected function getLength(){
+        return $this->length;
+    }
+
+    protected final function read(&$results, $fileName, $columns, $key){
         $doFilter = count($this->filters) > 0;
-        $file = fopen($this->root . $file, "r");
+        $file = fopen($this->root . $fileName, "r");
         $size = fstat($file)['size'];
-        $base = 0;
+        $base = $this->getStart($fileName, $size);
+
         while ($base < $size){
             $this->temp_cache = [];
             if(!$doFilter || $this->checkFilters($file, $base)){
@@ -103,7 +121,7 @@ abstract class Reader
         $this->filters[] = [$name, $condition, $value];
     }
 
-    public final function readData($columns = false, $key = false){
+    public function readData($columns = false, $key = false){
         if (!$columns){
             $columns = array_keys($this->columns);
         }
