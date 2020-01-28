@@ -2,6 +2,10 @@
 
 namespace Controllers;
 
+/**
+ * Class HomeController
+ * @package Controllers
+ */
 class HomeController extends Controller
 {
 

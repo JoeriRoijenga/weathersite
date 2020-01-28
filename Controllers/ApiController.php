@@ -5,6 +5,10 @@ namespace Controllers;
 use Data\StationReader;
 use Data\WeatherReader;
 
+/**
+ * Class ApiController
+ * @package Controllers
+ */
 class ApiController extends Controller
 {
     private $filters = [
@@ -15,21 +19,10 @@ class ApiController extends Controller
         'long_end' => ['float', 'latitude', '<='],
     ];
 
-    public function stations()
-    {
-        $reader = new StationReader();
-        $this->addFilters($reader, [
-            'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
-        ]);
-
-        $results = $reader->readData(['id', 'name', 'latitude', 'longitude']);
-
-        $this->json([
-            'items' => $results ?? [],
-            'amount' => count($results ?? []),
-        ]);
-    }
-
+    /**
+     * @param $reader
+     * @param $keys
+     */
     private function addFilters(&$reader, $keys)
     {
         foreach ($keys as $index => $key) {
@@ -47,6 +40,24 @@ class ApiController extends Controller
         }
     }
 
+    public function stations()
+    {
+        $reader = new StationReader();
+        $this->addFilters($reader, [
+            'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
+        ]);
+
+        $results = $reader->readData(['id', 'name', 'latitude', 'longitude']);
+
+        $this->json([
+            'items' => $results ?? [],
+            'amount' => count($results ?? []),
+        ]);
+    }
+
+    /**
+     * @param $stationId
+     */
     public function station($stationId)
     {
         $stationId = (int)filter_var($stationId, FILTER_SANITIZE_NUMBER_INT);

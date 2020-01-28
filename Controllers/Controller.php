@@ -2,8 +2,17 @@
 
 namespace Controllers;
 
+/**
+ * Class Controller
+ * @package Controllers
+ */
 abstract class Controller
 {
+    /**
+     * @param $key
+     * @param bool $filter
+     * @return array|bool|float|int|mixed
+     */
     protected function input($key, $filter = false)
     {
         if (is_array($key)) {
@@ -36,6 +45,10 @@ abstract class Controller
         }
     }
 
+    /**
+     * @param $object
+     * @param int $status
+     */
     protected function json($object, $status = 200)
     {
         header('Content-Type: application/json');
@@ -44,6 +57,10 @@ abstract class Controller
         echo json_encode($object, JSON_UNESCAPED_SLASHES);
     }
 
+    /**
+     * @param $file
+     * @param array $variables
+     */
     protected function html($file, $variables = [])
     {
 
