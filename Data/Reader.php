@@ -45,7 +45,7 @@ abstract class Reader
 
     protected abstract function getFiles();
 
-    protected final function read(&$results, $fileName, $columns, $key)
+    protected final function read(&$results, $fileName, $columns, $key, $noFilters = false)
     {
         $doFilter = count($this->filters) > 0;
         $file = fopen($this->root . $fileName, "r");
@@ -54,7 +54,7 @@ abstract class Reader
 
         while ($base < $size) {
             $this->temp_cache = [];
-            if (!$doFilter || $this->checkFilters($file, $base)) {
+            if ($noFilters || !$doFilter || $this->checkFilters($file, $base)) {
                 $result = [];
                 foreach ($columns as $column) {
                     $result[$column] = $this->getColumn($file, $base, $column);

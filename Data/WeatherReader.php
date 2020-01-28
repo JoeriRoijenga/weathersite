@@ -9,6 +9,7 @@ class WeatherReader extends Reader
     private $type;
     private $categoryCount;
     private $date_start;
+    private $timeCheck = false;
 
     public function __construct($aggregate, $type, $categoryCount = [])
     {
@@ -156,9 +157,13 @@ class WeatherReader extends Reader
             }
         }
 
-        $latestUpdate = 0;
-        foreach ($this->list($this->getRoot()) as $dateDir) {
+        $maxDate = 0;
+        $latestFile = '';
+        foreach (array_reverse($this->list($this->getRoot())) as $dateDir) {
             if (strtotime($dateDir) >= $this->date_start) {
+                if (strtotime($dateDir) > $maxDate) {
+                    $maxDate = strtotime($dateDir);
+                }
                 $datePath = $this->getRoot() . '/' . $dateDir;
                 foreach ($this->list($datePath) as $categoryDir) {
                     if (isset($categories[$categoryDir])) {
@@ -168,22 +173,27 @@ class WeatherReader extends Reader
                             if ($hourFile > $maxHour) {
                                 $maxHour = $hourFile;
                             }
-                            $time = filectime($categoryPath . '/' . $hourFile);
-                            if ($time > $latestUpdate) {
-                                $latestUpdate = $time;
-                            }
-                            if ($this->aggregate != 'latest' || $maxHour == $hourFile) {
-                                $files[] = '/' . $dateDir . '/' . $categoryDir . '/' . $hourFile;
+                            if ($this->aggregate != 'latest' || $maxDate == strtotime($dateDir) && $maxHour == $hourFile) {
+                                $filePath = '/' . $dateDir . '/' . $categoryDir . '/' . $hourFile;
+                                $files[] = $filePath;
+                                if ($this->aggregate == 'latest'){
+                                    $latestFile = $filePath;
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        $latestUpdate -= $latestUpdate % 60;
+
         if ($this->aggregate == 'latest') {
-            // timezone difference
-            $this->addFilter('time', 'time', $latestUpdate - 3600);
+            $data = [];
+            $this->timeCheck = true;
+            $this->read($data, $latestFile, ['time'], false, true);
+            $this->timeCheck = false;
+            $latestUpdate = strtotime($data[0]['time']);
+            $latestUpdate -= $latestUpdate % 60;
+            $this->addFilter('time', 'time', $latestUpdate);
         }
 
         return $files;
@@ -191,6 +201,10 @@ class WeatherReader extends Reader
 
     protected function getStart($fileName, $size)
     {
+        if($this->timeCheck){
+            return $size - $this->getLength();
+        }
+
         if ($this->aggregate == 'latest') {
             $fileParts = explode('/', $fileName);
             end($fileParts);
