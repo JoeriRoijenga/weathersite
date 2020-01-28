@@ -4,7 +4,7 @@ RewriteCond %{REQUEST_URI} !-f
 RewriteCond %{REQUEST_URI} !-d
 RewriteCond %{REQUEST_URI} !-L
 # l = last
-RewriteRule ^(example|test|css|vendors|vendor|js|img|upload|assets)($|/) - [L]
+RewriteRule ^(assets|shandor\ testsite)($|/) - [L]
 RewriteRule ^(.*)$ index.php?req=$1 [L,QSA]
 
 </IfModule>
