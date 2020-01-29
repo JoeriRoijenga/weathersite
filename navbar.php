@@ -39,7 +39,6 @@ li a:hover {
   <?php
   if (isset($username)) {
     echo '<li style="float:right"><a href="logout.php">Logout</a></li>' ;
-    echo '<li style="float:right"><a href="account.php">Account</a></li>';
     
   } else {
    echo '<li style="float:right"><a href="login.php">Login</a></li>' ;
