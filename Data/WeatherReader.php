@@ -12,7 +12,8 @@ class WeatherReader extends Reader
     private $aggregate;
     private $type;
     private $categoryCount;
-    private $date_start;
+    private $date_start = false;
+    private $date_end = false;
     private $timeCheck = false;
 
     /**
@@ -37,6 +38,16 @@ class WeatherReader extends Reader
         }
 
         $this->date_start = $date;
+    }
+
+    public function setStartDate($startDate)
+    {
+        $this->date_start = strtotime($startDate);
+    }
+
+    public function setEndDate($endDate)
+    {
+        $this->date_end = strtotime($endDate);
     }
 
     /**
@@ -182,7 +193,8 @@ class WeatherReader extends Reader
         $maxDate = 0;
         $latestFile = '';
         foreach (array_reverse($this->list($this->getRoot())) as $dateDir) {
-            if (strtotime($dateDir) >= $this->date_start) {
+            if ($this->aggregate == 'latest' ||
+                strtotime($dateDir) >= $this->date_start && (!$this->date_end || strtotime($dateDir) <= $this->date_end)) {
                 if (strtotime($dateDir) > $maxDate) {
                     $maxDate = strtotime($dateDir);
                 }
@@ -261,13 +273,13 @@ class WeatherReader extends Reader
     protected function getColumn($file, $base, $name)
     {
         $filePath = explode('/', stream_get_meta_data($file)['uri']);
-        $value = parent::getColumn($file, $base, $name);
 
         if ($name == 'date') {
             end($filePath);
             prev($filePath);
             return prev($filePath);
         }
+        $value = parent::getColumn($file, $base, $name);
 
         if ($name == 'id') {
             end($filePath);

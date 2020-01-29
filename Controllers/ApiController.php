@@ -61,6 +61,8 @@ class ApiController extends Controller
     public function station($stationId)
     {
         $stationId = (int)filter_var($stationId, FILTER_SANITIZE_NUMBER_INT);
+        $startDate = $this->input('start_date', 'string');
+        $endDate = $this->input('end_date', 'string');
         $aggregate = $this->input('group_by', 'string');
         $type = $this->input('group_type', 'string');
         if (!$aggregate || !in_array($aggregate, ['minute', 'hour'])) {
@@ -81,8 +83,13 @@ class ApiController extends Controller
         }
 
         $station = $results[0];
-        $station['measurements'] = [];
         $reader = new WeatherReader($aggregate, $type);
+        if (strtotime($startDate) !== false){
+            $reader->setStartDate($startDate);
+        }
+        if (strtotime($endDate) !== false){
+            $reader->setEndDate($endDate);
+        }
         $this->addFilters($reader, ['stn' => $stationId]);
         $station['weather'] = $reader->readData();
 
