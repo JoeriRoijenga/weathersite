@@ -7,6 +7,7 @@ use Controllers\LoginController;
 use Controllers\Admin\HomeController as AdminHomeController;
 use Controllers\Admin\UserEditController;
 use Controllers\Admin\UserAddController;
+use Controllers\Admin\PrecipitationController;
 use Routing\Router;
 
 spl_autoload_register(function ($className) {
@@ -26,6 +27,7 @@ $router->register('/login', LoginController::class, "login", Router::POST);
 $router->register('/admin/home', AdminHomeController::class, "home");
 $router->register('/admin/edituser', UserEditController::class, "edituser");
 $router->register('/admin/adduser', UserAddController::class, "adduser", Router::POST);
+$router->register('/precipitation', PrecipitationController::class, "precipitation");
 
 // API routes
 $router->register('/api/v1/stations', ApiController::class, 'stations');
