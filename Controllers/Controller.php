@@ -51,6 +51,10 @@ abstract class Controller
             $$key = $value;
         }
 
+        if ($file != "login") {
+            include __DIR__ . '/../Views/header.php';
+            include __DIR__ . '/../Views/navbar.php';
+        }
         include __DIR__ . '/../Views/' . $file . '.php';
     }
 

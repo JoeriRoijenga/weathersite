@@ -1,0 +1,17 @@
+@font-face {
+	font-family: ABCSans-Black;
+	src:	url('assets/ABCSans-Black.woff2') format('woff2'),
+			url('assets/ABCSans-Black.ttf') format('ttf');
+	font-weight: bold;
+}
+@font-face {
+	font-family: ABCSans;
+	src:	url(assets/ABCSans.woff2) format('woff2'),
+			url(assets/ABCSans.ttf) format('ttf');
+	font-weight: normal;
+}
+@font-face {
+	font-family: ABCSans-Bold;
+	src:	url(assets/ABCSans-Bold.woff2) format('woff2'),
+			url(assets/ABCSans-Bold.ttf) format('ttf');
+}

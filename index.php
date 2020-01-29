@@ -2,6 +2,11 @@
 
 use Controllers\ApiController;
 use Controllers\HomeController;
+use Controllers\MapController;
+use Controllers\LoginController;
+use Controllers\Admin\HomeController as AdminHomeController;
+use Controllers\Admin\UserEditController;
+use Controllers\Admin\UserAddController;
 use Routing\Router;
 
 spl_autoload_register(function ($className) {
@@ -12,7 +17,15 @@ spl_autoload_register(function ($className) {
 
 $router = new Router();
 
+// Normal routes
 $router->register('/', HomeController::class, "home");
+$router->register('/map', MapController::class, "map");
+$router->register('/login', LoginController::class, "login", Router::POST);
+
+// Admin routes
+$router->register('/admin/home', AdminHomeController::class, "home");
+$router->register('/admin/edituser', UserEditController::class, "edituser");
+$router->register('/admin/adduser', UserAddController::class, "adduser", Router::POST);
 
 // API routes
 $router->register('/api/v1/stations', ApiController::class, 'stations');
