@@ -45,16 +45,6 @@ body {
 </head>
 <body>
 
-<div class="header">
-  <?php
-    include'header.php';
-  ?>
-</div>
-
-<?php
-  include'navbar.php';
-?>
-
 <div class="row">
   <div class="side">
       <h2>Sidebar</h2>
