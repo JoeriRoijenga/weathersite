@@ -6,23 +6,9 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
 }
-
-.wrapper {
-  display: grid;
-  grid-template-columns:  repeat(6, 1fr);
-  grid-template-rows: repeat(6, auto);
-}
-
-.box {
-  border: 1px solid #444;
-
-}
-
 /***********************************************************************************/
 /* Style the header */
 .header {
-	grid-column: 1 / 7;
-	grid-row: 1 / 2;
     padding: 20px;
     text-align: center;
     background: white;
@@ -37,8 +23,6 @@ body {
 
 /* Style the top navigation bar */
 .navbar {
-	grid-column: 1 / 7;
-	grid-row: 2 / 3;
     overflow: hidden;
     background-color: #bbb;
 }
@@ -105,29 +89,31 @@ body {
 
 /***********************************************************************************/
 
+/* Column container */
+.row {  
+    display: flex;
+    flex-wrap: wrap;
+}
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .side {
-	grid-column: 5 / 7;
-	grid-row: 3 / 4;
+    flex: 30%;
     background-color: #f1f1f1;
     padding: 20px;
 }
 
 /* Main column */
 .main {   
-    grid-column: 1 / 5;
-	grid-row: 3 / 5;
+    flex: 70%;
     background-color: white;
     padding: 20px;
 }
 
 .full{
-	grid-column: 1 / 7;
-	grid-row: 3 / 4;
-    background-color: white;
-    padding: 20px;
+	background-color: white;
+	width: 100%;
+	padding: 20px;
 }
 
 /* Fake image, just for this example */
@@ -155,9 +141,7 @@ body {
 /***********************************************************************************/
 
 /* Footer */
-.footer-1 {
-	grid-column: 1 / 7;
-	grid-row: 6 / 7;
+.footer {
     padding: 20px;
     text-align: center;
     background: #ddd;
