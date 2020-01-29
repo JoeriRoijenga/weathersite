@@ -67,7 +67,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js"></script>
-    <script src="assets/map.js"></script>
-    <script src="assets/graph.js"></script>
+    <script src="/assets/map.js"></script>
+    <script src="/assets/graph.js"></script>
 </body>
 </html>

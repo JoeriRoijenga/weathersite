@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<h1>Edit user:</h1>
-		<form action="/edituser" method="post">
+		<form action="/admin/user/<?= $userid ?>/edit" method="post">
 			<label>ID:</label><br>
 			<input type='text' name='id' readonly value='<?= $userid ?>'><br>
 			<label>Username:</label><br>

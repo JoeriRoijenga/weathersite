@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 if (!empty($_SESSION)){
     $username = $_SESSION['username'];
     $priv_level = $_SESSION['priv_level'];
@@ -32,22 +32,15 @@ if (!empty($_SESSION)){
     }
 </style>
 <ul id="nav">
-	<li><a href="index.php">Home</a></li>
-	<li><a href="precipitation">Precipitation</a></li>
- 	
- 	
-  <?php
-  if (isset($username)) {
-    echo '<li style="float:right"><a href="/logout">Logout</a></li>' ;
-    
-  } else {
-   echo '<li style="float:right"><a href="/login">Login</a></li>' ;
-  }
-  if (isset($priv_level)) {
-      if ($priv_level == 2) {
-          echo '<li style="float:right"><a href="/admin/index">Admin</a></li>';
-      }
-  }
-  ?>
-  
+	<li><a href="/">Home</a></li>
+	<li><a href="/precipitation">Precipitation</a></li>
+ 	<?php if(isset($username)): ?>
+        <li style="float:right"><a href="/logout">Logout</a></li>
+    <?php else: ?>
+        <li style="float:right"><a href="/login">Login</a></li>
+    <?php endif; ?>
+
+    <?php if(isset($priv_level) && $priv_level == 2): ?>
+        <li style="float:right"><a href="/admin/home">Admin</a></li>
+    <?php endif; ?>
 </ul>

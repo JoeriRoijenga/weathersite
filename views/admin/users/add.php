@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Add user:</h1>
-	<form action="/admin/adduser" method="post">
+	<form action="/admin/user/add" method="post">
 		<label>Username:</label><br>
 		<input type='text' name='username' placeholder='Enter username' autofocus='true'><br>	
 		<label>Password:</label><br>

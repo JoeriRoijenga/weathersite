@@ -36,34 +36,8 @@
 	</style>
 </head>
 <body>
-<?php
-if (!empty($_SESSION)){
-	header("Location: /home");
-}
-$err = 0;
-include 'database.php';
-if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-	if (ctype_alnum($_POST['username'])) {
-		$input_username = $_POST['username'];
-	} else {
-		$err = 1;
-	}
-	
-	$input_password = $_POST['password'];
-
-	$sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
-	$data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);
-	if (password_verify($input_password, $data["password"])) {
-   		$_SESSION['username'] = $data['username'];
-   		$_SESSION['priv_level'] = $data['priv_level'];
-   		header("Location: /admin/home");
-   	} else {
-   		$err = 1;
-   	}		
-};
-?>
 <div id="login-box">
-<div id="logo-img"><img src="assets/abclogo.svg" alt="logo" height="60"></div><div id="logo-text">ABC</div>
+<div id="logo-img"><img src="/assets/abclogo.svg" alt="logo" height="60"></div><div id="logo-text">ABC</div>
 <div id="form-box">
 	<h1>Login</h1>
 	<form action="/login" method="post">

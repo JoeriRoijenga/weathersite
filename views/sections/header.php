@@ -2,20 +2,20 @@
     <style>
     @font-face {
         font-family: ABCSans-Black;
-        src:	url('assets/ABCSans-Black.woff2') format('woff2'),
-                url('assets/ABCSans-Black.ttf') format('ttf');
+        src:	url('/assets/ABCSans-Black.woff2') format('woff2'),
+                url('/assets/ABCSans-Black.ttf') format('ttf');
         font-weight: bold;
     }
     @font-face {
         font-family: ABCSans;
-        src:	url(assets/ABCSans.woff2) format('woff2'),
-                url(assets/ABCSans.ttf) format('ttf');
+        src:	url(/assets/ABCSans.woff2) format('woff2'),
+                url(/assets/ABCSans.ttf) format('ttf');
         font-weight: normal;
     }
     @font-face {
         font-family: ABCSans;
-        src:	url(assets/ABCSans-Bold.woff2) format('woff2'),
-                url(assets/ABCSans-Bold.ttf) format('ttf');
+        src:	url(/assets/ABCSans-Bold.woff2) format('woff2'),
+                url(/assets/ABCSans-Bold.ttf) format('ttf');
         font-weight: bold;
     }
 
@@ -37,5 +37,5 @@
     }
     </style>
 
-    <div class="logoimg"><img src="assets/abclogo.svg" alt="logo" height="60"></div><div class="logotext">ABC</div>
+    <div class="logoimg"><img src="/assets/abclogo.svg" alt="logo" height="60"></div><div class="logotext">ABC</div>
 </div>

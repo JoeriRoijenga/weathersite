@@ -5,11 +5,8 @@
 	<title>ABCWeather: Admin</title>
 </head>
 <body>
-<?php
-include 'adminsession.php';
-?>
-<a href='adduser'>Add user</a><br>
-<a href='listuser'>List users</a>
+<a href='/admin/user/add'>Add user</a><br>
+<a href='/admin/users'>List users</a>
 </body>
 </html>
 
