@@ -8,13 +8,13 @@
 </head>
 <body>
 
-<div class="box header">
+<div class="header">
   <h1>Climat Express</h1>
   <img src="abchome.png" alt="abchome.png" width="300" height="80">
 </div>
 
-<div class="box navbar"> 
-  <a href="#">HOME</a>
+<div class="navbar"> 
+  <a href="index.php">HOME</a>
   <a href="#">Map</a>
   <a href="#">History</a>
   <a href="#">Top rain</a>
@@ -30,9 +30,9 @@
    </div>
 </div>
 
-<div class=" box row">
+<div class="row">
 
-  <div class="box main">
+  <div class="main">
       <h2>TITLE HEADING</h2>
       <h5>Title description, oktober 1, 2018</h5>
       <div class="fakeimg" style="height:200px;">Image</div>
@@ -46,7 +46,7 @@
       <p>Some more text.</p>
   </div>
   
-    <div class="box side">
+    <div class="side">
 		<h2>Stuff</h2>
 		<h5>Our icon:</h5>
 		<img src="icon.png" alt="icon" >
