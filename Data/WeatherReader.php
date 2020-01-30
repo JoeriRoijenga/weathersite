@@ -64,6 +64,9 @@ class WeatherReader extends Reader
         foreach ($results as $result) {
             $time = '';
             switch ($this->aggregate) {
+                case '10_second':
+                    $time = substr($result['time'], 0, 7) . '0';
+                    break;
                 case 'minute':
                 case 'latest':
                     $time = substr($result['time'], 0, 6) . '00';
@@ -127,7 +130,7 @@ class WeatherReader extends Reader
                     $aggregate[$key] = $value;
                 }
 
-                if ($this->aggregate != 'latest') {
+                if ($this->aggregate != 'latest' && $this->aggregate != '10_second') {
                     unset($aggregate['date'], $aggregate['id']);
                 }
                 unset($aggregate['count'], $aggregate['total'], $aggregate['min'], $aggregate['max'], $aggregate['avg']);

@@ -14,6 +14,7 @@ abstract class Reader
 
     private $filters = [];
     private $temp_cache = false;
+    private $outputTerminalProgress = false;
 
     /**
      * Reader constructor.
@@ -31,6 +32,11 @@ abstract class Reader
     }
 
     protected abstract function getColumns();
+
+    public function outputTerminalProgress()
+    {
+        $this->outputTerminalProgress = 1;
+    }
 
     /**
      * @param $name
@@ -54,8 +60,24 @@ abstract class Reader
         }
 
         $results = [];
-        foreach ($this->getFiles() as $file) {
+        $files = $this->getFiles();
+        $total = count($files);
+        if ($this->outputTerminalProgress){
+            if (!array_key_exists($this->outputTerminalProgress - 1, $files)){
+                echo "\033[0G\033[2K 100% - $total/$total";
+                return [];
+            }elseif ($this->outputTerminalProgress == 1){
+                echo "\033[0G\033[2K 0% - 0/$total";
+            }
+            $files = [$files[$this->outputTerminalProgress - 1]];
+        }
+        foreach ($files as $file) {
             $this->read($results, $file, $columns, $key);
+            if ($this->outputTerminalProgress){
+                $percentage = floor(($this->outputTerminalProgress / $total) * 100);
+                echo "\033[0G\033[2K $percentage% - $this->outputTerminalProgress/$total";
+                $this->outputTerminalProgress++;
+            }
         }
 
         return $results;
