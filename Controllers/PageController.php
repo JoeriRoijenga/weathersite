@@ -2,6 +2,10 @@
 
 namespace Controllers;
 
+/**
+ * Class PageController
+ * @package Controllers
+ */
 class PageController extends Controller
 {
 

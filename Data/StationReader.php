@@ -2,6 +2,10 @@
 
 namespace Data;
 
+/**
+ * Class StationReader
+ * @package Data
+ */
 class StationReader extends Reader
 {
 
@@ -10,6 +14,9 @@ class StationReader extends Reader
         parent::__construct(__DIR__ . '/../weather_data');
     }
 
+    /**
+     * @return array
+     */
     public function getColumns()
     {
         $pos = 0;
@@ -22,6 +29,9 @@ class StationReader extends Reader
         ];
     }
 
+    /**
+     * @return array
+     */
     protected function getFiles()
     {
         $files = [

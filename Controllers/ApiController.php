@@ -5,6 +5,10 @@ namespace Controllers;
 use Data\StationReader;
 use Data\WeatherReader;
 
+/**
+ * Class ApiController
+ * @package Controllers
+ */
 class ApiController extends Controller
 {
     private $filters = [
@@ -15,21 +19,10 @@ class ApiController extends Controller
         'long_end' => ['float', 'latitude', '<='],
     ];
 
-    public function stations()
-    {
-        $reader = new StationReader();
-        $this->addFilters($reader, [
-            'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
-        ]);
-
-        $results = $reader->readData(['id', 'name', 'latitude', 'longitude']);
-
-        $this->json([
-            'items' => $results ?? [],
-            'amount' => count($results ?? []),
-        ]);
-    }
-
+    /**
+     * @param $reader
+     * @param $keys
+     */
     private function addFilters(&$reader, $keys)
     {
         foreach ($keys as $index => $key) {
@@ -47,9 +40,29 @@ class ApiController extends Controller
         }
     }
 
+    public function stations()
+    {
+        $reader = new StationReader();
+        $this->addFilters($reader, [
+            'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
+        ]);
+
+        $results = $reader->readData(['id', 'name', 'latitude', 'longitude']);
+
+        $this->json([
+            'items' => $results ?? [],
+            'amount' => count($results ?? []),
+        ]);
+    }
+
+    /**
+     * @param $stationId
+     */
     public function station($stationId)
     {
         $stationId = (int)filter_var($stationId, FILTER_SANITIZE_NUMBER_INT);
+        $startDate = $this->input('start_date', 'string');
+        $endDate = $this->input('end_date', 'string');
         $aggregate = $this->input('group_by', 'string');
         $type = $this->input('group_type', 'string');
         if (!$aggregate || !in_array($aggregate, ['minute', 'hour'])) {
@@ -70,8 +83,13 @@ class ApiController extends Controller
         }
 
         $station = $results[0];
-        $station['measurements'] = [];
         $reader = new WeatherReader($aggregate, $type);
+        if (strtotime($startDate) !== false){
+            $reader->setStartDate($startDate);
+        }
+        if (strtotime($endDate) !== false){
+            $reader->setEndDate($endDate);
+        }
         $this->addFilters($reader, ['stn' => $stationId]);
         $station['weather'] = $reader->readData();
 

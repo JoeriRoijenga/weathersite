@@ -2,6 +2,12 @@
 
 namespace Routing;
 
+use Controllers\Controller;
+
+/**
+ * Class Route
+ * @package Routing
+ */
 class Route
 {
 
@@ -10,6 +16,12 @@ class Route
     private $httpMethods = [];
     private $options = [];
 
+    /**
+     * Route constructor.
+     * @param $controller Controller Controller to call.
+     * @param $method string Method name to call in the Controller.
+     * @param string $httpMethod string HTTP method to match.
+     */
     public function __construct($controller, $method, $httpMethod)
     {
         $this->controller = $controller;
@@ -21,6 +33,11 @@ class Route
         }
     }
 
+    /**
+     * Set the URI params used in this route.
+     *
+     * @param $options array Array of the used params.
+     */
     public function setOptions($options)
     {
         $this->options = $options;

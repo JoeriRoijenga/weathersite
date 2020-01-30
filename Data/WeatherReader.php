@@ -2,15 +2,26 @@
 
 namespace Data;
 
+/**
+ * Class WeatherReader
+ * @package Data
+ */
 class WeatherReader extends Reader
 {
 
     private $aggregate;
     private $type;
     private $categoryCount;
-    private $date_start;
+    private $date_start = false;
+    private $date_end = false;
     private $timeCheck = false;
 
+    /**
+     * WeatherReader constructor.
+     * @param $aggregate
+     * @param $type
+     * @param array $categoryCount
+     */
     public function __construct($aggregate, $type, $categoryCount = [])
     {
         parent::__construct(__DIR__ . '/../weather_data/weather');
@@ -29,6 +40,21 @@ class WeatherReader extends Reader
         $this->date_start = $date;
     }
 
+    public function setStartDate($startDate)
+    {
+        $this->date_start = strtotime($startDate);
+    }
+
+    public function setEndDate($endDate)
+    {
+        $this->date_end = strtotime($endDate);
+    }
+
+    /**
+     * @param bool $columns
+     * @param bool $key
+     * @return array
+     */
     public function readData($columns = false, $key = false)
     {
         $aggregates = [];
@@ -48,9 +74,8 @@ class WeatherReader extends Reader
             }
 
             $id = $result['id'];
-            if (!isset($aggregates[$id])) {
+            if (!isset($aggregates[$id]))
                 $aggregates[$id] = [];
-            }
 
             if (!isset($aggregates[$id][$time])) {
                 $aggregates[$id][$time] = [
@@ -95,9 +120,8 @@ class WeatherReader extends Reader
                 }
 
                 $index = $aggregate['date'];
-                if (!isset($measurements[$index])) {
+                if (!isset($measurements[$index]))
                     $measurements[$index] = [];
-                }
 
                 foreach ($aggregate[$this->type] as $key => $value) {
                     $aggregate[$key] = $value;
@@ -115,6 +139,9 @@ class WeatherReader extends Reader
         return $measurements;
     }
 
+    /**
+     * @return array
+     */
     protected function getColumns()
     {
         $position = 0;
@@ -136,6 +163,12 @@ class WeatherReader extends Reader
         ];
     }
 
+    /**
+     * @return array
+     */
+    /**
+     * @return array
+     */
     protected function getFiles()
     {
         $files = [];
@@ -160,7 +193,8 @@ class WeatherReader extends Reader
         $maxDate = 0;
         $latestFile = '';
         foreach (array_reverse($this->list($this->getRoot())) as $dateDir) {
-            if (strtotime($dateDir) >= $this->date_start) {
+            if ($this->aggregate == 'latest' ||
+                strtotime($dateDir) >= $this->date_start && (!$this->date_end || strtotime($dateDir) <= $this->date_end)) {
                 if (strtotime($dateDir) > $maxDate) {
                     $maxDate = strtotime($dateDir);
                 }
@@ -199,6 +233,16 @@ class WeatherReader extends Reader
         return $files;
     }
 
+    /**
+     * @param $fileName
+     * @param $size
+     * @return float|int
+     */
+    /**
+     * @param $fileName
+     * @param $size
+     * @return float|int
+     */
     protected function getStart($fileName, $size)
     {
         if($this->timeCheck){
@@ -214,11 +258,30 @@ class WeatherReader extends Reader
         return 0;
     }
 
+    /**
+     * @param $file
+     * @param $base
+     * @param $name
+     * @return array|bool|int|mixed|string
+     */
+    /**
+     * @param $file
+     * @param $base
+     * @param $name
+     * @return array|bool|int|mixed|string
+     */
     protected function getColumn($file, $base, $name)
     {
+        $filePath = explode('/', stream_get_meta_data($file)['uri']);
+
+        if ($name == 'date') {
+            end($filePath);
+            prev($filePath);
+            return prev($filePath);
+        }
+        $value = parent::getColumn($file, $base, $name);
+
         if ($name == 'id') {
-            $value = parent::getColumn($file, $base, $name);
-            $filePath = explode('/', stream_get_meta_data($file)['uri']);
             end($filePath);
             $category = prev($filePath);
             if ($category != 0) {
@@ -226,28 +289,18 @@ class WeatherReader extends Reader
             } else {
                 return (int)$value;
             }
-        } elseif ($name == 'date') {
-            $filePath = explode('/', stream_get_meta_data($file)['uri']);
-            end($filePath);
-            prev($filePath);
-            return prev($filePath);
-        } elseif ($name == 'time') {
-            $value = parent::getColumn($file, $base, $name);
-            $filePath = explode('/', stream_get_meta_data($file)['uri']);
+        }elseif ($name == 'time') {
             $hour = str_pad(end($filePath), 2, '0', STR_PAD_LEFT);
             $minutes = str_pad(floor($value / 60), 2, '0', STR_PAD_LEFT);
             $seconds = str_pad($value % 60, 2, '0', STR_PAD_LEFT);
             return $hour . ':' . $minutes . ':' . $seconds;
-        } elseif ($name == 'events') {
-            $value = [];
-            $event = parent::getColumn($file, $base, $name);
-
+        }elseif ($name == 'events') {
+            $events = [];
             foreach (['freezing', 'rain', 'snow', 'hail', 'thunder', 'tornado/whirlwind'] as $name) {
-                $value[$name] = $event & 0xE0 ? true : false;
-                $event <<= 1;
+                $events[$name] = $value & 0xE0 ? true : false;
+                $value <<= 1;
             }
-
-            return $value;
+            return $events;
         } else {
             return parent::getColumn($file, $base, $name);
         }

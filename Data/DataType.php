@@ -2,6 +2,10 @@
 
 namespace Data;
 
+/**
+ * Class DataType
+ * @package Data
+ */
 class DataType
 {
 
@@ -16,6 +20,12 @@ class DataType
     private $signed;
     private $decimals;
 
+    /**
+     * DataType constructor.
+     * @param $type
+     * @param $position
+     * @param $length
+     */
     private function __construct($type, &$position, $length)
     {
         $this->type = $type;
@@ -25,6 +35,12 @@ class DataType
         $position += $length;
     }
 
+    /**
+     * @param $position
+     * @param $length
+     * @param bool $signed
+     * @return DataType
+     */
     public static function Integer(&$position, $length, $signed = false)
     {
         $type = new DataType(self::INTEGER, $position, $length);
@@ -33,6 +49,13 @@ class DataType
         return $type;
     }
 
+    /**
+     * @param $position
+     * @param $length
+     * @param $decimals
+     * @param bool $signed
+     * @return DataType
+     */
     public static function Double(&$position, $length, $decimals, $signed = false)
     {
         $type = new DataType(self::DOUBLE, $position, $length);
@@ -41,6 +64,11 @@ class DataType
         return $type;
     }
 
+    /**
+     * @param $position
+     * @param $length
+     * @return DataType
+     */
     public static function String(&$position, $length)
     {
         return new DataType(self::STRING, $position, $length);
@@ -61,6 +89,10 @@ class DataType
         return $this->decimals;
     }
 
+    /**
+     * @param $value
+     * @return bool|float|int|string
+     */
     public function decodeValue($value)
     {
         $decodedValue = false;

@@ -2,9 +2,14 @@
 
 namespace Routing;
 
+use Controllers\Controller;
 use const FILTER_SANITIZE_SPECIAL_CHARS;
 use const INPUT_SERVER;
 
+/**
+ * Class Router
+ * @package Routing
+ */
 class Router
 {
 
@@ -13,11 +18,24 @@ class Router
 
     private $routes = [];
 
+    /**
+     * Register URL match
+     *
+     * @param $url string URL to register.
+     * @param $controller Controller Controller to call.
+     * @param $method string Method name to call in the Controller.
+     * @param string $httpMethod string HTTP method to match.
+     */
     public function register($url, $controller, $method, $httpMethod = self::GET)
     {
         $this->routes[$url] = new Route($controller, $method, $httpMethod);
     }
 
+    /**
+     * Find matching route for the current Request URL.
+     *
+     * @return bool|Route Return Match if found.
+     */
     public function match()
     {
         $url = $_GET['req'] ?? '/';

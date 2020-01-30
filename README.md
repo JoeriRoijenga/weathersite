@@ -18,6 +18,8 @@ URL params:
 Query params:
 - group_by | *Group measurements by "minute" or "hour". Default: "minute".*
 - group_type | *Group type, grouped values should show "min", "max" or "avg". Default: "avg".*
+- end_date | *End date in Y-m-d format.*
+- start_date | *Start date in Y-m-d format.*
 
 **/api/v1/weather/latest**
 

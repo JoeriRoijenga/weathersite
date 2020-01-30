@@ -2,6 +2,10 @@
 
 namespace Data;
 
+/**
+ * Class Reader
+ * @package Data
+ */
 abstract class Reader
 {
     private $root;
@@ -11,6 +15,10 @@ abstract class Reader
     private $filters = [];
     private $temp_cache = false;
 
+    /**
+     * Reader constructor.
+     * @param $root
+     */
     protected function __construct($root)
     {
         $this->root = $root;
@@ -24,11 +32,21 @@ abstract class Reader
 
     protected abstract function getColumns();
 
+    /**
+     * @param $name
+     * @param $condition
+     * @param $value
+     */
     public final function addFilter($name, $condition, $value)
     {
         $this->filters[] = [$name, $condition, $value];
     }
 
+    /**
+     * @param bool $columns
+     * @param bool $key
+     * @return array
+     */
     public function readData($columns = false, $key = false)
     {
         if (!$columns) {
@@ -45,6 +63,13 @@ abstract class Reader
 
     protected abstract function getFiles();
 
+    /**
+     * @param $results
+     * @param $fileName
+     * @param $columns
+     * @param $key
+     * @param bool $noFilters
+     */
     protected final function read(&$results, $fileName, $columns, $key, $noFilters = false)
     {
         $doFilter = count($this->filters) > 0;
@@ -71,11 +96,21 @@ abstract class Reader
         $this->temp_cache = false;
     }
 
+    /**
+     * @param $fileName
+     * @param $size
+     * @return int
+     */
     protected function getStart($fileName, $size)
     {
         return 0;
     }
 
+    /**
+     * @param $file
+     * @param $base
+     * @return bool
+     */
     private function checkFilters($file, $base)
     {
         foreach ($this->filters as $filter) {
@@ -108,6 +143,12 @@ abstract class Reader
         return true;
     }
 
+    /**
+     * @param $file
+     * @param $base
+     * @param $name
+     * @return bool|mixed
+     */
     protected function getColumn($file, $base, $name)
     {
         if (!array_key_exists($name, $this->columns)) {
@@ -125,6 +166,9 @@ abstract class Reader
         return $type->decodeValue($value);
     }
 
+    /**
+     * @return array
+     */
     protected function getFilters()
     {
         return $this->filters;
@@ -135,11 +179,18 @@ abstract class Reader
         return $this->root;
     }
 
+    /**
+     * @return int
+     */
     protected function getLength()
     {
         return $this->length;
     }
 
+    /**
+     * @param $path
+     * @return array
+     */
     protected final function list($path)
     {
         return array_diff(scandir($path), ['.', '..']);
