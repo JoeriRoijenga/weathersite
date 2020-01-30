@@ -1,7 +1,9 @@
 <?php
 
 use Controllers\ApiController;
-use Controllers\HomeController;
+use Controllers\PageController;
+use Controllers\AccountController;
+use Controllers\AdminController;
 use Routing\Router;
 
 spl_autoload_register(function ($className) {
@@ -10,9 +12,24 @@ spl_autoload_register(function ($className) {
     }
 });
 
+session_start();
+
 $router = new Router();
 
-$router->register('/', HomeController::class, "home");
+// Static pages
+$router->register('/', PageController::class, "home");
+$router->register('/map', PageController::class, "map");
+$router->register('/precipitation', PageController::class, "precipitation");
+
+// Login/logout
+$router->register('/login', AccountController::class, "login", [Router::GET, Router::POST]);
+$router->register('/logout', AccountController::class, "logout", [Router::GET, Router::POST]);
+
+// Admin routes
+$router->register('/admin/home', AdminController::class, "home");
+$router->register('/admin/users', AdminController::class, "usersOverview");
+$router->register('/admin/user/add', AdminController::class, "userAdd", [Router::GET, Router::POST]);
+$router->register('/admin/user/?/?', AdminController::class, "userEdit", [Router::GET, Router::POST]);
 
 // API routes
 $router->register('/api/v1/stations', ApiController::class, 'stations');
@@ -28,8 +45,8 @@ if ($route) {
         $controller->{$route->method()}(...$route->options());
     } catch (Exception $exception) {
         // @TODO handle any leftover error or error page
-        include "Views/404.php";
+        include "views/404.php";
     }
 } else {
-    include "Views/404.php";
+    include "views/404.php";
 }
