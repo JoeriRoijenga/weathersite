@@ -34,6 +34,7 @@ if (!empty($_SESSION)){
 <ul id="nav">
 	<li><a href="/">Home</a></li>
 	<li><a href="/precipitation">Precipitation</a></li>
+    <li><a href="/map">Map</a></li>
  	<?php if(isset($username)): ?>
         <li style="float:right"><a href="/logout">Logout</a></li>
     <?php else: ?>
