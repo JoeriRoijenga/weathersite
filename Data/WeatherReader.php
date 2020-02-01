@@ -8,46 +8,60 @@ namespace Data;
  */
 class WeatherReader extends Reader
 {
-
+    private $stations = 'all';
+    private $dateStart = false;
+    private $dateEnd = false;
     private $aggregate;
     private $type;
-    private $categoryCount;
-    private $date_start = false;
-    private $date_end = false;
-    private $timeCheck = false;
 
     /**
      * WeatherReader constructor.
-     * @param $aggregate
-     * @param $type
-     * @param array $categoryCount
      */
-    public function __construct($aggregate, $type, $categoryCount = [])
+    public function __construct($aggregate, $type)
     {
         parent::__construct(__DIR__ . '/../weather_data/weather');
 
         $this->aggregate = $aggregate;
         $this->type = $type;
-        $this->categoryCount = $categoryCount;
+    }
 
-        $date = strtotime('today');
-        switch ($aggregate) {
-            case 'hour':
-                $date = strtotime('today - 7');
-                break;
-        }
-
-        $this->date_start = $date;
+    public function setStations($stations)
+    {
+        $this->stations = is_array($stations) ? array_flip($stations) : [$stations => true];
     }
 
     public function setStartDate($startDate)
     {
-        $this->date_start = strtotime($startDate);
+        $this->dateStart = strtotime($startDate);
     }
 
     public function setEndDate($endDate)
     {
-        $this->date_end = strtotime($endDate);
+        $this->dateEnd = strtotime($endDate);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getColumns()
+    {
+        $position = 0;
+        return [
+            'id' => null,
+            'date' => null,
+            'time' => DataType::Integer($position, 2),
+            'temperature' => DataType::Double($position, 3, 1, true),
+            'dew_point' => DataType::Double($position, 3, 1, true),
+            'air_pressure_sea' => DataType::Double($position, 3, 1),
+            'air_pressure_station' => DataType::Double($position, 3, 1),
+            'visibility' => DataType::Double($position, 2, 1),
+            'wind_speed' => DataType::Double($position, 2, 1),
+            'rainfall' => DataType::Double($position, 3, 2),
+            'snowfall' => DataType::Double($position, 3, 1, true),
+            'events' => DataType::Integer($position, 1),
+            'cloudiness' => DataType::Double($position, 2, 1),
+            'wind_direction' => DataType::Integer($position, 2)
+        ];
     }
 
     /**
@@ -59,7 +73,8 @@ class WeatherReader extends Reader
     {
         $aggregates = [];
         $measurements = [];
-        $results = parent::readData($columns, $key);
+        $fixedColumns = array_merge($columns, ['id', 'time', 'date']);
+        $results = parent::readData($fixedColumns, $key);
 
         foreach ($results as $result) {
             $time = '';
@@ -90,12 +105,15 @@ class WeatherReader extends Reader
                     'max' => [],
                     'total' => [],
                     'avg' => [],
-                    'events' => []
                 ];
             }
-            $aggregates[$id][$time]['events'] = $result['events'];
             $aggregates[$id][$time]['count']++;
-            unset($result['id'], $result['date'], $result['time'], $result['events']);
+            unset($result['id'], $result['date'], $result['time']);
+
+            if (isset($result['events'])){
+                $aggregates[$id][$time]['events'] = $result['events'];
+                unset($result['events']);
+            }
 
             foreach ($result as $key => $value) {
                 if (!isset($aggregates[$id][$time]['total'][$key])) {
@@ -145,120 +163,42 @@ class WeatherReader extends Reader
     /**
      * @return array
      */
-    protected function getColumns()
-    {
-        $position = 0;
-        return [
-            'id' => DataType::Integer($position, 2),
-            'date' => null,
-            'time' => DataType::Integer($position, 2),
-            'temperature' => DataType::Double($position, 3, 1, true),
-            'dew_point' => DataType::Double($position, 3, 1, true),
-            'air_pressure_sea' => DataType::Double($position, 3, 1),
-            'air_pressure_station' => DataType::Double($position, 3, 1),
-            'visibility' => DataType::Double($position, 2, 1),
-            'wind_speed' => DataType::Double($position, 2, 1),
-            'rainfall' => DataType::Double($position, 3, 2),
-            'snowfall' => DataType::Double($position, 3, 1, true),
-            'events' => DataType::Integer($position, 1),
-            'cloudiness' => DataType::Double($position, 2, 1),
-            'wind_direction' => DataType::Integer($position, 2)
-        ];
-    }
-
-    /**
-     * @return array
-     */
     /**
      * @return array
      */
     protected function getFiles()
     {
+        if (!$this->dateStart)
+            $this->dateStart = strtotime('today');
+        if (!$this->dateEnd)
+            $this->dateEnd = strtotime('today');
+
         $files = [];
-        $categories = [];
-        foreach ($this->getFilters() as $filter) {
-            if ($filter[0] == 'id') {
-                if (!is_array($filter[2])) {
-                    $filter[2] = [$filter[2]];
-                }
+        $iterator =  new \RecursiveDirectoryIterator($this->getRoot(), \FilesystemIterator::SKIP_DOTS|\FilesystemIterator::KEY_AS_FILENAME|\FilesystemIterator::UNIX_PATHS);
+        while ($iterator->valid()){
+            $station = $iterator->key();
+            if ($this->stations == 'all' || isset($this->stations[$station])){
 
-                foreach ($filter[2] as $value) {
-                    $category = substr($value, -6, -4);
-                    if (empty($category)) {
-                        $category = 0;
-                    }
+                $dateIterator = $iterator->getChildren();
+                while ($dateIterator->valid()){
+                    $date = strtotime($dateIterator->key());
+                    if ($date >= $this->dateStart && $date <= $this->dateEnd){
 
-                    $categories[$category] = true;
-                }
-            }
-        }
-
-        $maxDate = 0;
-        $latestFile = '';
-        foreach (array_reverse($this->list($this->getRoot())) as $dateDir) {
-            if ($this->aggregate == 'latest' ||
-                strtotime($dateDir) >= $this->date_start && (!$this->date_end || strtotime($dateDir) <= $this->date_end)) {
-                if (strtotime($dateDir) > $maxDate) {
-                    $maxDate = strtotime($dateDir);
-                }
-                $datePath = $this->getRoot() . '/' . $dateDir;
-                foreach ($this->list($datePath) as $categoryDir) {
-                    if (isset($categories[$categoryDir])) {
-                        $categoryPath = $datePath . '/' . $categoryDir;
-                        $maxHour = 0;
-                        foreach (array_reverse($this->list($categoryPath)) as $hourFile) {
-                            if ($hourFile > $maxHour) {
-                                $maxHour = $hourFile;
-                            }
-                            if ($this->aggregate != 'latest' || $maxDate == strtotime($dateDir) && $maxHour == $hourFile) {
-                                $filePath = '/' . $dateDir . '/' . $categoryDir . '/' . $hourFile;
-                                $files[] = $filePath;
-                                if ($this->aggregate == 'latest'){
-                                    $latestFile = $filePath;
-                                }
-                            }
+                        $hourIterator = $dateIterator->getChildren();
+                        while ($hourIterator->valid()){
+                            $files[] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
+                            $hourIterator->next();
                         }
-                    }
-                }
-            }
-        }
 
-        if ($this->aggregate == 'latest') {
-            $data = [];
-            $this->timeCheck = true;
-            $this->read($data, $latestFile, ['time'], false, true);
-            $this->timeCheck = false;
-            $latestUpdate = strtotime($data[0]['time']);
-            $latestUpdate -= $latestUpdate % 60;
-            $this->addFilter('time', 'time', $latestUpdate);
+                    }
+                    $dateIterator->next();
+                }
+
+            }
+            $iterator->next();
         }
 
         return $files;
-    }
-
-    /**
-     * @param $fileName
-     * @param $size
-     * @return float|int
-     */
-    /**
-     * @param $fileName
-     * @param $size
-     * @return float|int
-     */
-    protected function getStart($fileName, $size)
-    {
-        if($this->timeCheck){
-            return $size - $this->getLength();
-        }
-
-        if ($this->aggregate == 'latest') {
-            $fileParts = explode('/', $fileName);
-            end($fileParts);
-            $cat = prev($fileParts);
-            return $size - $this->categoryCount[$cat] * $this->getLength();
-        }
-        return 0;
     }
 
     /**
@@ -275,25 +215,17 @@ class WeatherReader extends Reader
      */
     protected function getColumn($file, $base, $name)
     {
-        $filePath = explode('/', stream_get_meta_data($file)['uri']);
+        list($station, $date, $hour) = array_slice(explode('/', stream_get_meta_data($file)['uri']), -3);
 
-        if ($name == 'date') {
-            end($filePath);
-            prev($filePath);
-            return prev($filePath);
+        if ($name == 'id'){
+            return $station;
+        }elseif ($name == 'date'){
+            return $date;
         }
-        $value = parent::getColumn($file, $base, $name);
 
-        if ($name == 'id') {
-            end($filePath);
-            $category = prev($filePath);
-            if ($category != 0) {
-                return (int)($category . $value);
-            } else {
-                return (int)$value;
-            }
-        }elseif ($name == 'time') {
-            $hour = str_pad(end($filePath), 2, '0', STR_PAD_LEFT);
+        $value = parent::getColumn($file, $base, $name);
+        if ($name == 'time') {
+            $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
             $minutes = str_pad(floor($value / 60), 2, '0', STR_PAD_LEFT);
             $seconds = str_pad($value % 60, 2, '0', STR_PAD_LEFT);
             return $hour . ':' . $minutes . ':' . $seconds;
@@ -304,9 +236,9 @@ class WeatherReader extends Reader
                 $value <<= 1;
             }
             return $events;
-        } else {
-            return parent::getColumn($file, $base, $name);
         }
+
+        return $value;
     }
 
 }

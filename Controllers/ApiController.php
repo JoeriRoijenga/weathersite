@@ -26,17 +26,11 @@ class ApiController extends Controller
     private function addFilters(&$reader, $keys)
     {
         foreach ($keys as $index => $key) {
-            if (!is_numeric($index)) {
-                $filter = $this->filters[$index];
-                $value = $key;
-            } else {
-                $filter = $this->filters[$key];
-                $value = $this->input($key, $filter[0]);
-            }
+            $filter = $this->filters[!is_numeric($index) ? $index : $key];
+            $value = !is_numeric($index) ? $key : $this->input($key, $filter[0]);
 
-            if ($value !== false) {
+            if ($value !== false)
                 $reader->addFilter($filter[1], $filter[2], $value);
-            }
         }
     }
 
@@ -81,73 +75,21 @@ class ApiController extends Controller
             $this->json(['message' => 'station not found'], 404);
             exit;
         }
-
         $station = $results[0];
+        unset($results, $reader);
+
         $reader = new WeatherReader($aggregate, $type);
-        if (strtotime($startDate) !== false){
-            $reader->setStartDate($startDate);
-        }
-        if (strtotime($endDate) !== false){
-            $reader->setEndDate($endDate);
-        }
-        $this->addFilters($reader, ['stn' => $stationId]);
-        $station['weather'] = $reader->readData();
+        $reader->setStations($station['id']);
+        $reader->setStartDate($startDate);
+        $reader->setEndDate($endDate);
+        $station['weather'] = $reader->readData(['air_pressure_station', 'rainfall']);
 
         $this->json(['item' => $station, 'group_by' => $aggregate, 'group_type' => $type]);
     }
 
     public function weather()
     {
-        $reader = new StationReader();
-        $this->addFilters($reader, [
-            'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
-        ]);
-        $results = $reader->readData(['id', 'name', 'latitude', 'longitude', 'category_count'], 'id');
-        $ids = [];
-        $categoryCount = [];
-        foreach ($results as $result) {
-            $ids[] = $result['id'];
-            $categoryCount[floor($result['id'] / 10000)] = $result['category_count'];
-        }
 
-        $orderBy = $this->input('order_by', 'string');
-        if (!in_array($orderBy, array_keys($reader->getColumns()))) {
-            $orderBy = 'rainfall';
-        }
-        $limit = $this->input('limit', 'integer');
-        if ($limit <= 0) {
-            $limit = 10;
-        }
-
-        $reader = new WeatherReader('latest', 'avg', $categoryCount);
-        $this->addFilters($reader, ['stn' => $ids]);
-
-        $time = 0;
-        $date = 0;
-        $weather = [];
-        foreach (array_values($reader->readData())[0] as $info) {
-            $date = $info['date'];
-            $time = $info['time'];
-            $info['station'] = $results[$info['id']];
-            unset($info['station']['category_count'], $info['id'], $info['date'], $info['time']);
-            $weather[] = $info;
-        }
-
-        usort($weather, function ($a, $b) use ($orderBy) {
-            return $a[$orderBy] < $b[$orderBy];
-        });
-
-        if (count($weather) > $limit) {
-            $weather = array_slice($weather, 0, $limit);
-        }
-
-        $this->json([
-            'date' => $date,
-            'time' => $time,
-            'count' => count($weather),
-            'order_by' => $orderBy,
-            'items' => $weather
-        ]);
     }
 
 }

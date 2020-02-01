@@ -6,7 +6,7 @@ namespace Data;
  * Class Reader
  * @package Data
  */
-abstract class Reader
+abstract class ReaderOld
 {
     private $root;
     private $length = 0;
@@ -14,6 +14,7 @@ abstract class Reader
 
     private $filters = [];
     private $temp_cache = false;
+    private $outputTerminalProgress = false;
 
     /**
      * Reader constructor.
@@ -31,6 +32,11 @@ abstract class Reader
     }
 
     protected abstract function getColumns();
+
+    public function outputTerminalProgress()
+    {
+        $this->outputTerminalProgress = 1;
+    }
 
     /**
      * @param $name
@@ -55,8 +61,23 @@ abstract class Reader
 
         $results = [];
         $files = $this->getFiles();
+        $total = count($files);
+        if ($this->outputTerminalProgress){
+            if (!array_key_exists($this->outputTerminalProgress - 1, $files)){
+                echo "\033[0G\033[2K 100% - $total/$total";
+                return [];
+            }elseif ($this->outputTerminalProgress == 1){
+                echo "\033[0G\033[2K 0% - 0/$total";
+            }
+            $files = [$files[$this->outputTerminalProgress - 1]];
+        }
         foreach ($files as $file) {
             $this->read($results, $file, $columns, $key);
+            if ($this->outputTerminalProgress){
+                $percentage = floor(($this->outputTerminalProgress / $total) * 100);
+                echo "\033[0G\033[2K $percentage% - $this->outputTerminalProgress/$total";
+                $this->outputTerminalProgress++;
+            }
         }
 
         return $results;
@@ -76,7 +97,7 @@ abstract class Reader
         $doFilter = count($this->filters) > 0;
         $file = fopen($this->root . $fileName, "r");
         $size = fstat($file)['size'];
-        $base = 0;
+        $base = $this->getStart($fileName, $size);
 
         while ($base < $size) {
             $this->temp_cache = [];
@@ -95,6 +116,16 @@ abstract class Reader
         }
         fclose($file);
         $this->temp_cache = false;
+    }
+
+    /**
+     * @param $fileName
+     * @param $size
+     * @return int
+     */
+    protected function getStart($fileName, $size)
+    {
+        return 0;
     }
 
     /**

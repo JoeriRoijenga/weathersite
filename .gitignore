@@ -1,2 +1,3 @@
 .idea
 weather_data/historical/*.csv
+weather_data/weather/
