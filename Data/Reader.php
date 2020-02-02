@@ -30,7 +30,7 @@ abstract class Reader
         }
     }
 
-    protected abstract function getColumns();
+    public abstract function getColumns();
 
     /**
      * @param $name
@@ -42,45 +42,50 @@ abstract class Reader
         $this->filters[] = [$name, $condition, $value];
     }
 
+    public final function hasFilters()
+    {
+        return count($this->filters) > 0;
+    }
+
     /**
      * @param bool $columns
      * @param bool $key
+     * @param bool $last
      * @return array
      */
-    public function readData($columns = false, $key = false)
+    public function readData($columns = false, $key = false, $last = false)
     {
         if (!$columns) {
             $columns = array_keys($this->columns);
         }
 
         $results = [];
-        $files = $this->getFiles();
+        $files = $this->getFiles($last);
         foreach ($files as $file) {
-            $this->read($results, $file, $columns, $key);
+            $this->read($results, $file, $columns, $key, $last);
         }
 
         return $results;
     }
 
-    protected abstract function getFiles();
+    protected abstract function getFiles($last = false);
 
     /**
      * @param $results
      * @param $fileName
      * @param $columns
      * @param $key
-     * @param bool $noFilters
+     * @param bool $last
      */
-    protected final function read(&$results, $fileName, $columns, $key, $noFilters = false)
+    protected final function read(&$results, $fileName, $columns, $key, $last = false)
     {
-        $doFilter = count($this->filters) > 0;
         $file = fopen($this->root . $fileName, "r");
         $size = fstat($file)['size'];
-        $base = 0;
+        $base = $last ? ($size - $this->getLength()) : 0;
 
         while ($base < $size) {
             $this->temp_cache = [];
-            if ($noFilters || !$doFilter || $this->checkFilters($file, $base)) {
+            if (!$this->hasFilters() || $this->checkFilters($file, $base)) {
                 $result = [];
                 foreach ($columns as $column) {
                     $result[$column] = $this->getColumn($file, $base, $column);

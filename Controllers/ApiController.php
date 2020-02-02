@@ -56,16 +56,19 @@ class ApiController extends Controller
     {
         $stationId = (int)filter_var($stationId, FILTER_SANITIZE_NUMBER_INT);
         $startDate = $this->input('start_date', 'string');
-        $endDate = $this->input('end_date', 'string');
-        $aggregate = $this->input('group_by', 'string');
-        $type = $this->input('group_type', 'string');
-        if (!$aggregate || !in_array($aggregate, ['minute', 'hour'])) {
-            $aggregate = 'minute';
-        }
+        if(!$startDate)
+            $startDate = 'today';
 
-        if (!$type || !in_array($type, ['min', 'max', 'avg'])) {
+        $endDate = $this->input('end_date', 'string');
+        if(!$endDate)
+            $endDate = 'today';
+
+        $aggregate = $this->input('group_by', 'string');
+        if (!$aggregate || !in_array($aggregate, ['second', 'minute', 'hour']))
+            $aggregate = 'minute';
+        $type = $this->input('group_type', 'string');
+        if (!$type || !in_array($type, ['min', 'max', 'avg']))
             $type = 'avg';
-        }
 
         $reader = new StationReader();
         $this->addFilters($reader, ['stn' => $stationId]);
@@ -84,12 +87,88 @@ class ApiController extends Controller
         $reader->setEndDate($endDate);
         $station['weather'] = $reader->readData(['air_pressure_station', 'rainfall']);
 
-        $this->json(['item' => $station, 'group_by' => $aggregate, 'group_type' => $type]);
+        $reader = new WeatherReader('second', 'avg');
+        $reader->setStations($station['id']);
+        foreach ($reader->readData(['air_pressure_station', 'rainfall'], false, true) as $date => $result){
+            $result = $result[0];
+            unset($result['id']);
+            $result['date'] = $date;
+            $keys = ['id' => 0, 'date' => 1, 'time' => 2];
+            uksort($result, function ($a, $b) use($keys){
+                return ($keys[$a] ?? 3) > ($keys[$b] ?? 3);
+            });
+            $station['weather_latest'] = $result;
+        }
+
+
+        $this->json([
+            'item' => $station,
+            'group_by' => $aggregate,
+            'group_type' => $type,
+            'start_date' => date('Y-m-d', strtotime($startDate)),
+            'end_date' => date('Y-m-d', strtotime($endDate))
+        ]);
     }
 
     public function weather()
     {
+        $reader = new StationReader();
+        $this->addFilters($reader, [
+            'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
+        ]);
 
+        $ids = false;
+        if ($reader->hasFilters()){
+            $stations = $reader->readData([], 'id');
+            $ids = array_keys($stations);
+            unset($stations, $results);
+
+            if (count($ids) <= 0){
+                $this->json(['message' => 'no stations not found'], 404);
+                exit;
+            }
+        }
+
+        $reader = new WeatherReader('second', 'avg');
+
+        if ($ids)
+            $reader->setStations($ids);
+
+        $results = $reader->readData(['air_pressure_station', 'rainfall'], false, true);
+        $orderBy = $this->input('order_by', 'string');
+        if (!in_array($orderBy, array_keys($reader->getColumns())))
+            $orderBy = 'rainfall';
+
+        $limit = $this->input('limit', 'integer');
+        if ($limit <= 0)
+            $limit = 10;
+
+        $weather = [];
+        foreach ($results as $date => $resultsPerDate){
+            foreach ($resultsPerDate as $result){
+                $result['id'] = (int) $result['id'];
+                $result['date'] = $date;
+                $keys = ['id' => 0, 'date' => 1, 'time' => 2];
+                uksort($result, function ($a, $b) use($keys){
+                    return ($keys[$a] ?? 3) > ($keys[$b] ?? 3);
+                });
+                $weather[] = $result;
+            }
+        }
+
+        usort($weather, function ($a, $b) use ($orderBy) {
+            return $a[$orderBy] < $b[$orderBy];
+        });
+
+        if (count($weather) > $limit) {
+            $weather = array_slice($weather, 0, $limit);
+        }
+
+        $this->json([
+            'items' => $weather,
+            'count' => count($weather),
+            'order_by' => $orderBy
+        ]);
     }
 
 }

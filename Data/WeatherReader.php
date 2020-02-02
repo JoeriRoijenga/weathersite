@@ -43,7 +43,7 @@ class WeatherReader extends Reader
     /**
      * @return array
      */
-    protected function getColumns()
+    public function getColumns()
     {
         $position = 0;
         return [
@@ -67,23 +67,26 @@ class WeatherReader extends Reader
     /**
      * @param bool $columns
      * @param bool $key
+     * @param bool $last
      * @return array
      */
-    public function readData($columns = false, $key = false)
+    public function readData($columns = false, $key = false, $last = false)
     {
         $aggregates = [];
         $measurements = [];
         $fixedColumns = array_merge($columns, ['id', 'time', 'date']);
-        $results = parent::readData($fixedColumns, $key);
+        $results = parent::readData($fixedColumns, $key, $last);
 
         foreach ($results as $result) {
             $time = '';
             switch ($this->aggregate) {
+                case 'second':
+                    $time = $result['time'];
+                    break;
                 case '10_second':
                     $time = substr($result['time'], 0, 7) . '0';
                     break;
                 case 'minute':
-                case 'latest':
                     $time = substr($result['time'], 0, 6) . '00';
                     break;
                 case 'hour':
@@ -134,7 +137,7 @@ class WeatherReader extends Reader
         }
 
         $columns = $this->getColumns();
-        foreach ($aggregates as $result) {
+        foreach ($aggregates as $station => $result) {
             foreach ($result as $aggregate) {
                 foreach ($aggregate['total'] as $key => $value) {
                     $aggregate['avg'][$key] = round($value / $aggregate['count'], $columns[$key]->getDecimals());
@@ -148,10 +151,10 @@ class WeatherReader extends Reader
                     $aggregate[$key] = $value;
                 }
 
-                if ($this->aggregate != 'latest' && $this->aggregate != '10_second') {
-                    unset($aggregate['date'], $aggregate['id']);
-                }
-                unset($aggregate['count'], $aggregate['total'], $aggregate['min'], $aggregate['max'], $aggregate['avg']);
+                if (!$last)
+                    unset($aggregate['id']);
+
+                unset($aggregate['date'], $aggregate['count'], $aggregate['total'], $aggregate['min'], $aggregate['max'], $aggregate['avg']);
 
                 $measurements[$index][] = $aggregate;
             }
@@ -161,20 +164,15 @@ class WeatherReader extends Reader
     }
 
     /**
+     * @param bool $last
      * @return array
      */
-    /**
-     * @return array
-     */
-    protected function getFiles()
+    protected function getFiles($last = false)
     {
-        if (!$this->dateStart)
-            $this->dateStart = strtotime('today');
-        if (!$this->dateEnd)
-            $this->dateEnd = strtotime('today');
 
         $files = [];
         $iterator =  new \RecursiveDirectoryIterator($this->getRoot(), \FilesystemIterator::SKIP_DOTS|\FilesystemIterator::KEY_AS_FILENAME|\FilesystemIterator::UNIX_PATHS);
+        $s = 0;
         while ($iterator->valid()){
             $station = $iterator->key();
             if ($this->stations == 'all' || isset($this->stations[$station])){
@@ -182,11 +180,14 @@ class WeatherReader extends Reader
                 $dateIterator = $iterator->getChildren();
                 while ($dateIterator->valid()){
                     $date = strtotime($dateIterator->key());
-                    if ($date >= $this->dateStart && $date <= $this->dateEnd){
+                    if ($last || $date >= $this->dateStart && $date <= $this->dateEnd){
 
                         $hourIterator = $dateIterator->getChildren();
                         while ($hourIterator->valid()){
-                            $files[] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
+                            if ($last)
+                                $files[$s] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
+                            else
+                                $files[] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
                             $hourIterator->next();
                         }
 
@@ -194,6 +195,7 @@ class WeatherReader extends Reader
                     $dateIterator->next();
                 }
 
+                $s++;
             }
             $iterator->next();
         }

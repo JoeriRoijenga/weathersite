@@ -30,9 +30,10 @@ class StationReader extends Reader
     }
 
     /**
+     * @param bool $last | Irrelevant for stations
      * @return array
      */
-    protected function getFiles()
+    protected function getFiles($last = false)
     {
         $files = [
             'ne' => '/stations-ne.dat',
