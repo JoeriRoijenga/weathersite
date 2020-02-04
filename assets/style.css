@@ -177,7 +177,7 @@ body {
 }
 
 .nav-menu li ul {
-    background: #bbb;
+    background: #333;
     visibility: hidden;
 	list-style-type: none;
     position: absolute;
