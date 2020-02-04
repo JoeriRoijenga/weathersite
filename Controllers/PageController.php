@@ -31,7 +31,7 @@ class PageController extends Controller
 
         $object = json_decode($data);
 
-        return $object->items;
+        return $object->items ?? [];
     }
 
     public function map()

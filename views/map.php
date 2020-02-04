@@ -16,7 +16,7 @@
                                 <nav>
                                     <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-temp" role="tab" aria-controls="nav-home" aria-selected="true">Temperature</a>
-                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-aps" role="tab" aria-controls="nav-profile" aria-selected="false">Air Pressure Station</a>
+                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-aps" role="tab" aria-controls="nav-profile" aria-selected="false">Air Pressure</a>
                                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-rain" role="tab" aria-controls="nav-profile" aria-selected="false">Rainfall</a>
                                     </div>
                                 </nav>

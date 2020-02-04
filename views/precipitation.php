@@ -24,7 +24,7 @@
 <table>
 	<tr><th>Station</th><th>Rainfall</th></tr>
 <?php 
-foreach ($topTen as $a) {
+foreach ($topTen ?? [] as $a) {
 	echo "<tr><td>";
 	echo ucfirst(strtolower($a->station->name));
 	echo "</td><td>";

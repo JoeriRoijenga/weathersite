@@ -162,7 +162,7 @@ function Get(jsonURL, update = false){
 
             // Create dataset bar graph
             datasets[1] = [{
-                label: 'Air Pressure Station',
+                label: 'Air Pressure',
                 backgroundColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
                 barPercentage: 0.5,
                 barThickness: 6,
