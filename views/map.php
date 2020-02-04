@@ -15,16 +15,20 @@
                             <div class="col-md-12">
                                 <nav>
                                     <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Line Graph</a>
-                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Bar Graph</a>
+                                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-temp" role="tab" aria-controls="nav-home" aria-selected="true">Temperature</a>
+                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-aps" role="tab" aria-controls="nav-profile" aria-selected="false">Air Pressure Station</a>
+                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-rain" role="tab" aria-controls="nav-profile" aria-selected="false">Rainfall</a>
                                     </div>
                                 </nav>
                                 <div class="tab-content" id="nav-tabContent">
-                                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                                        <canvas id="lineGraph"></canvas>
+                                    <div class="tab-pane fade show active" id="nav-temp" role="tabpanel" aria-labelledby="nav-home-tab">
+                                        <canvas id="graphTemperature"></canvas>
                                     </div>
-                                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                                        <canvas id="barGraph"></canvas>
+                                    <div class="tab-pane fade" id="nav-aps" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                        <canvas id="graphAirPressureStation"></canvas>
+                                    </div>
+                                    <div class="tab-pane fade" id="nav-rain" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                        <canvas id="graphRainfall"></canvas>
                                     </div>
                                 </div>
                             </div>

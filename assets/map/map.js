@@ -149,4 +149,4 @@ function setup(markers) {
     }
 }
 // Start
-Get("api/v1/stations?lat_start=-30&lat_end=5");
+Get("api/v1/stations");
