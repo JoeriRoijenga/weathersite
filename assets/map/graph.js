@@ -1,12 +1,14 @@
 // Basis global variables
-var ctxLineGraph = document.getElementById('lineGraph').getContext('2d');
-var ctxBarGraph = document.getElementById('barGraph').getContext('2d');
+var ctxTemperature = document.getElementById('graphTemperature').getContext('2d');
+var ctxAirPressureStation = document.getElementById('graphAirPressureStation').getContext('2d');
+var ctxRainfall = document.getElementById('graphRainfall').getContext('2d');
 var charts = new Array();
 var stationLabel = document.getElementById("stationName");
-// var time = {
-//     '01:00': 0, '02:00': 0, '03:00': 0, '04:00': 0, '05:00': 0, '06:00': 0, '07:00': 0, '08:00': 0, '09:00': 0, '10:00': 0, '11:00': 0, "12:00": 0,
-//     '13:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00': 0, '22:00': 0, "23:00": 0, "00:00": 0
-// };
+var intervalGraph;
+var requests = [];
+
+// Temporary fake value
+var a = 0;
 
 function createTimeArray() {
     var time = {};
@@ -26,14 +28,13 @@ function createTimeArray() {
  */
 function startChart() {
     var station = document.getElementById('currentStation').value;
-    var randomData = new Array();
-
-    for (i = 0; i < 12; i++) {
-        randomData[randomData.length] = Math.floor((Math.random() * 40) + 1);
-    }
 
     if (station != 0) {
-        Get("api/v1/station/" + station + "?group_by=hour", randomData);
+        Get("api/v1/station/" + station + "?group_by=hour");
+
+        intervalGraph = setInterval(function() {
+            Get("api/v1/station/" + station + "?group_by=hour", true);
+        }, 10000);
     } else {
         destroyCharts();
     }
@@ -48,6 +49,11 @@ function destroyCharts() {
             charts[i].destroy();
         }
         stationLabel.innerHTML = "No Station Chosen";
+        clearInterval(intervalGraph);
+
+        requests.forEach(function(request) {
+            request.abort()
+        })
     }
 }
 
@@ -55,9 +61,13 @@ function destroyCharts() {
  * Creating the line graph
  *
  * @param dataset
+ * @param labels
+ * @param ctx
+ * @param update
+ * @returns {Chart}
  */
-function createLineGraph(dataset, labels) {
-    charts[0] = new Chart(ctxLineGraph, {
+function createLineGraph(dataset, labels, ctx, update = false) {
+    return new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -68,12 +78,29 @@ function createLineGraph(dataset, labels) {
 }
 
 /**
+ *
+ * @param chart
+ * @param dataset
+ * @param labels
+ */
+function updateLineGraph(chart, dataset, labels) {
+    chart.data = {
+        labels: labels,
+        datasets: dataset
+    };
+    chart.update();
+}
+
+/**
  * Creating the bar graph
  *
  * @param dataset
+ * @param labels
+ * @param ctx
+ * @returns {Chart}
  */
-function createBarGraph(dataset, labels) {
-    charts[1] = new Chart(ctxBarGraph, {
+function createBarGraph(dataset, labels, ctx) {
+    return new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
@@ -87,40 +114,54 @@ function createBarGraph(dataset, labels) {
  * Retrieving data and creating datasets
  *
  * @param jsonURL
- * @param randomData
+ * @param update
  * @constructor
  */
-function Get(jsonURL, randomData){
+function Get(jsonURL, update = false){
     var datasets = new Array();
     var Httpreq = new XMLHttpRequest();
+    requests.push(Httpreq);
+
+    if (!update) {
+        destroyCharts();
+    }
+
     Httpreq.open("GET", jsonURL);
     Httpreq.send();
     Httpreq.onreadystatechange=function() {
         if (this.readyState == 4 && this.status == 200) {
-            var data = JSON.parse(Httpreq.responseText);
-            destroyCharts();
+            var data = JSON.parse(Httpreq.responseText)
+
             // Creating variables for time
             var temp = createTimeArray();
             var pressureStation = createTimeArray();
+            var rainfall = createTimeArray();
 
             // Retrieving weather object
             var object = data.item.weather["2020-01-28"];
 
+            // Temporary fake data
+            if (update) {
+                a += 1 ;
+            }
+
+            // Sorting data
             for (item in object){
                 temp[object[item]["time"].toString().slice(0, -3)] = object[item]["temperature"];
                 pressureStation[object[item]["time"].toString().slice(0, -3)] = object[item]["air_pressure_station"];
+                rainfall[object[item]["time"].toString().slice(0, -3)] = object[item]["rainfall"] + a;
             }
 
-            // Creating line graph
-            createLineGraph(datasets[0] = [{
+            // Create dataset line graph, temperature
+            datasets[0] = [{
                 label: 'Temperature',
                 backgroundColor: 'rgba(0, 0, 0, 0)',
                 borderColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
                 data: listComprehension(temp, false)
-            }], listComprehension(temp));
+            }];
 
-            // Creating bar graph
-            createBarGraph([{
+            // Create dataset bar graph
+            datasets[1] = [{
                 label: 'Air Pressure Station',
                 backgroundColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
                 barPercentage: 0.5,
@@ -128,7 +169,29 @@ function Get(jsonURL, randomData){
                 maxBarThickness: 8,
                 minBarLength: 2,
                 data: listComprehension(pressureStation, false)
-            }], listComprehension(pressureStation));
+            }];
+
+            // Create dataset line graph, rainfall
+            datasets[2] = [{
+                label: 'Rainfall',
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                borderColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
+                data: listComprehension(rainfall, false)
+            }];
+
+            // Update line graph
+            if (update) {
+                updateLineGraph(charts[2], datasets[2], listComprehension(rainfall))
+            } else {
+                // Creating temperature
+                charts[0] = createLineGraph(datasets[0], listComprehension(temp), ctxTemperature, update);
+
+                // Creating air pressure station
+                charts[1] = createBarGraph(datasets[1], listComprehension(pressureStation), ctxAirPressureStation);
+
+                // Creating rainfall
+                charts[2] = createLineGraph(datasets[2], listComprehension(rainfall), ctxRainfall, update);
+            }
 
             // Station name
             stationLabel.innerHTML = data.item.name;
@@ -137,7 +200,8 @@ function Get(jsonURL, randomData){
 
     /**
      *
-     * @param array
+     * @param data
+     * @param key
      * @returns {any[]}
      */
     function listComprehension(data, key = true) {
