@@ -50,6 +50,9 @@ body {
     display: flex;
     flex-wrap: wrap;
 }
+.container {
+    max-width: 100%;
+}
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
@@ -116,7 +119,8 @@ body {
 }
 
 #stationName {
-    font-family: ABCSans-Bold;
+    font-family: ABCSans;
+    font-weight: bold;
 }
 
 .nav-menu {
@@ -135,7 +139,10 @@ body {
     display: block;
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding-left: 16px;
+	padding-right: 16px;
+	padding-top: 14px;
+	padding-bottom: 10px;
     text-decoration: none;
 }
 
@@ -167,4 +174,24 @@ body {
     background-color: green;
     border-radius: 50%;
     display: inline-block;
+}
+
+.nav-menu li ul {
+    background: #bbb;
+    visibility: hidden;
+	list-style-type: none;
+    position: absolute;
+	display: none;
+}
+
+.nav-menu li:hover > ul,
+.nav-menu li ul:hover,
+.nav-menu li ul:focus {
+   visibility: visible;
+   display: block;
+}
+
+.nav-menu li ul li {
+    clear: both;
+  width: 100%;
 }
