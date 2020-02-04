@@ -11,13 +11,14 @@ class PageController extends Controller
 
     public function home()
     {
-        $this->html("home");
+        $this->html("home",
+
+            ["topTen" => $this->createArray()]);
     }
 
     public function precipitation()
     {
-        $this->html("precipitation", 
-            ["topTen" => $this->createArray()]);
+        $this->html("precipitation");
     }
 
     private function createArray() {

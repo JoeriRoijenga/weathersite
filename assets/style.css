@@ -50,6 +50,9 @@ body {
     display: flex;
     flex-wrap: wrap;
 }
+.container {
+    max-width: 100%;
+}
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
@@ -116,7 +119,8 @@ body {
 }
 
 #stationName {
-    font-family: ABCSans-Bold;
+    font-family: ABCSans;
+    font-weight: bold;
 }
 
 .nav-menu {
