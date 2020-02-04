@@ -1,37 +1,14 @@
 <?php
-//session_start();
 if (!empty($_SESSION)){
     $username = $_SESSION['username'];
     $priv_level = $_SESSION['priv_level'];
 }
 ?>
-
-<style>
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #333;
-    }
-
-    li {
-      float: left;
-    }
-
-    li a {
-      display: block;
-      color: white;
-      text-align: center;
-      padding: 14px 16px;
-      text-decoration: none;
-    }
-
-    li a:hover {
-      background-color: #111;
-    }
-</style>
-<ul id="nav">
+<div class="header">
+    <div class="logoimg"><img src="/assets/abclogo.svg" alt="logo" height="60" about="Logo ABC"/></div>
+    <div class="logotext">ABC</div>
+</div>
+<ul class="nav-menu">
 	<li><a href="/">Home</a></li>
 	<li><a href="/precipitation">Precipitation</a></li>
     <li><a href="/map">Map</a></li>

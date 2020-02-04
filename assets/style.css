@@ -1,0 +1,148 @@
+@font-face {
+    font-family: ABCSans-Black;
+    src:	url('/assets/ABCSans-Black.woff2') format('woff2'),
+    url('/assets/ABCSans-Black.ttf') format('ttf');
+    font-weight: bold;
+}
+@font-face {
+    font-family: ABCSans;
+    src:	url(/assets/ABCSans.woff2) format('woff2'),
+    url(/assets/ABCSans.ttf) format('ttf');
+    font-weight: normal;
+}
+@font-face {
+    font-family: ABCSans;
+    src:	url(/assets/ABCSans-Bold.woff2) format('woff2'),
+    url(/assets/ABCSans-Bold.ttf) format('ttf');
+    font-weight: bold;
+}
+
+.header {
+    padding-left: 10px;
+    text-align: left;
+    background: white;
+    color: black;
+}
+
+.logotext {
+    font-family: ABCSans-Black;
+    font-size: 80px;
+    display: inline-block;
+    padding-left: 90px;
+}
+.logoimg {
+    display: inline-block;
+    position: absolute;
+    top: 32px;
+}
+
+.full-screen {
+    height: 75vh;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+/* Column container */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Create two unequal columns that sits next to each other */
+/* Sidebar/left column */
+.side {
+    flex: 20%;
+    background-color: #f1f1f1;
+    padding: 20px;
+}
+
+/* Main column */
+.main {
+    flex: 70%;
+    background-color: white;
+    padding: 20px;
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 700px) {
+    .row {
+        flex-direction: column;
+    }
+}
+
+* {
+     font-family: ABCSans;
+}
+
+.login-box {
+    margin: auto;
+}
+
+.form-box {
+    padding: 20px;
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    width: 250px;
+}
+
+.center {
+    margin: auto;
+    width: 15%;
+    border: 3px solid darkslategrey;
+    padding: 10px;
+}
+
+.center-logo {
+    margin: auto;
+    width: 15%;
+    padding: 10px;
+    height: 80px;
+}
+
+.logo-text-login {
+    font-family: ABCSans-Black;
+    font-size: 80px;
+    display: inline-block;
+    padding-left: 7px;
+    float: left;
+}
+
+.logo-img-login {
+    display: inline-block;
+    float: left;
+}
+
+#stationName {
+    font-family: ABCSans-Bold;
+}
+
+.nav-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+.nav-menu li {
+    float: left;
+}
+
+.nav-menu li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.nav-menu li a:hover {
+    background-color: #111;
+}
+
+.nav-menu {
+    height: 50px;
+}

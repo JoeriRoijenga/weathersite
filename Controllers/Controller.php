@@ -68,11 +68,12 @@ abstract class Controller
             $$key = $value;
         }
 
+        include __DIR__ . '/../views/sections/header.html';
         if ($file != "login") {
-            include __DIR__ . '/../views/sections/header.php';
             include __DIR__ . '/../views/sections/navbar.php';
         }
         include __DIR__ . '/../views/' . $file . '.php';
+        include __DIR__ . '/../views/sections/footer.html';
     }
 
 }
