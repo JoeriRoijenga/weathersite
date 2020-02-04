@@ -7,8 +7,8 @@ class Database{
     public static function getDB(){
         $dbhost="localhost";
         $dbuser="root";
-        $dbpass="root";
-        $dbname="abcweather";
+        $dbpass="";
+        $dbname="abc";
 
         $db= mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
         if(mysqli_connect_errno()) {
