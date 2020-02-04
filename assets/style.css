@@ -195,3 +195,6 @@ body {
     clear: both;
   width: 100%;
 }
+.dropdown-nopadding {
+	padding-left: 0px;
+}
