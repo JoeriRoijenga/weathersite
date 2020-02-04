@@ -19,7 +19,6 @@ $router = new Router();
 // Static pages
 $router->register('/', PageController::class, "home");
 $router->register('/map', PageController::class, "map");
-$router->register('/precipitation', PageController::class, "precipitation");
 
 // Login/logout
 $router->register('/login', AccountController::class, "login", [Router::GET, Router::POST]);
