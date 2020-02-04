@@ -35,13 +35,11 @@
   <div class="main">
       <h2>TITLE HEADING</h2>
       <h5>Title description, oktober 1, 2018</h5>
-      <div class="fakeimg" style="height:200px;">Image</div>
       <p>Some text..</p>
       <p>Some more text.</p>
       <br>
       <h2>TITLE HEADING</h2>
       <h5>Title description, oktober 2, 2018</h5>
-      <div class="fakeimg" style="height:200px;">Image</div>
       <p>Some text..</p>
       <p>Some more text.</p>
   </div>
@@ -50,7 +48,6 @@
 		<h2>Stuff</h2>
 		<h5>Our icon:</h5>
 		<img src="icon.png" alt="icon" >
-		<p>Delivering your weatherdata like your pizza</p>
 		<h3>Contact Info</h3>
 		<p>our Email: </p>
   </div>
