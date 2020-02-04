@@ -154,8 +154,30 @@ body {
     height: 50px;
 }
 
+.dot-red {
+    float: right;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 15px;
+    width: 15px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-green {
+    float: right;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 15px;
+    width: 15px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 .nav-menu li ul {
-    background: #bbb;
+    background: #333;
     visibility: hidden;
 	list-style-type: none;
     position: absolute;
@@ -172,4 +194,7 @@ body {
 .nav-menu li ul li {
     clear: both;
   width: 100%;
+}
+.dropdown-nopadding {
+	padding-left: 0px;
 }

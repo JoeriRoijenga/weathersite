@@ -53,7 +53,10 @@ function destroyCharts() {
 
         requests.forEach(function(request) {
             request.abort()
-        })
+        });
+
+        document.getElementById("rainfall").classList.remove('dot-green');
+        document.getElementById("rainfall").classList.add('dot-red')
     }
 }
 
@@ -66,7 +69,7 @@ function destroyCharts() {
  * @param update
  * @returns {Chart}
  */
-function createLineGraph(dataset, labels, ctx, update = false) {
+function createLineGraph(dataset, labels, ctx) {
     return new Chart(ctx, {
         type: 'line',
         data: {
@@ -184,13 +187,15 @@ function Get(jsonURL, update = false){
                 updateLineGraph(charts[2], datasets[2], listComprehension(rainfall))
             } else {
                 // Creating temperature
-                charts[0] = createLineGraph(datasets[0], listComprehension(temp), ctxTemperature, update);
+                charts[0] = createLineGraph(datasets[0], listComprehension(temp), ctxTemperature);
 
                 // Creating air pressure station
                 charts[1] = createBarGraph(datasets[1], listComprehension(pressureStation), ctxAirPressureStation);
 
                 // Creating rainfall
-                charts[2] = createLineGraph(datasets[2], listComprehension(rainfall), ctxRainfall, update);
+                charts[2] = createLineGraph(datasets[2], listComprehension(rainfall), ctxRainfall);
+                document.getElementById("rainfall").classList.remove('dot-red');
+                document.getElementById("rainfall").classList.add('dot-green');
             }
 
             // Station name

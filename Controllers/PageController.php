@@ -16,11 +16,6 @@ class PageController extends Controller
             ["topTen" => $this->createArray()]);
     }
 
-    public function precipitation()
-    {
-        $this->html("precipitation");
-    }
-
     private function createArray() {
         $ch = curl_init();
         $url = $_SERVER['HTTP_HOST'] . "/api/v1/weather/latest";
