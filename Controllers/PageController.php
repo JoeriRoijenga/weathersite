@@ -22,7 +22,11 @@ class PageController extends Controller
             header("Location: /login");
             exit(401);        
         }
+    }
 
-        
+    public function notFound($status){
+        $this->html("404", [
+            'status' => $status
+        ]);
     }
 }

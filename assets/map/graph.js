@@ -11,16 +11,33 @@ var temperatureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + M
 var rainfallColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')';
 var pressureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')';
 
-function createTimeArray() {
-    var time = {};
+/**
+ * Create time array based on the last datetime
+ * @param lastDate
+ * @returns {[]}
+ */
+function createTimeArray(lastDate) {
+    var time = [];
+    if (lastDate !== '-'){
+        var lastTime = lastDate.split(" ")[1].split(':');
+        for (var i = 23; i >= 0; i--){
+            time[lastTime.join(":")] = 0;
 
-    for (i = 0; i <= 23; i++) {
-        if (i < 10) {
-            i = "0" + i;
+            lastTime[2] -= 5;
+            if (lastTime[2] < 0){
+                lastTime[2] = 55;
+                lastTime[1] -= 1;
+                if (lastTime[1] < 0){
+                    lastTime[1] = 59;
+                    lastTime[0] -= 1;
+                    if (lastTime[0] < 0){
+                        lastTime[0] = 23;
+                    }
+                }
+            }
+            lastTime[2] = ("0" + lastTime[2]).substr(-2, 2)
         }
-        time[i + ":00"] = 0;
     }
-
     return time;
 }
 
@@ -139,11 +156,6 @@ function Get(jsonURL, update = false){
         if (this.readyState == 4 && this.status == 200) {
             var data = JSON.parse(Httpreq.responseText)
 
-            // Creating variables for time
-            var temp = [];
-            var pressureStation = [];
-            var rainfall = [];
-
             // Retrieving weather object
             var date = 0;
             var lastDate;
@@ -160,13 +172,25 @@ function Get(jsonURL, update = false){
             var lastUpdate = '-';
             for (var item in object){
                 if (object.hasOwnProperty(item)) {
-                    temp[object[item]["time"].toString().slice(-5)] = object[item]["temperature"];
-                    pressureStation[object[item]["time"].toString().slice(-5)] = object[item]["air_pressure_station"];
-                    rainfall[object[item]["time"].toString().slice(-5)] = object[item]["rainfall"];
                     lastUpdate = lastDate + " " + object[item]["time"];
-                    console.log(object[item]["time"]);
                 }
             }
+
+            var temp = createTimeArray(lastUpdate);
+            var pressureStation = temp.slice();
+            var rainfall = temp.slice();
+
+            for (var item in object){
+                if (object.hasOwnProperty(item)) {
+                    var shortTime = object[item]["time"].toString().slice(-8);
+                    if (temp.hasOwnProperty(shortTime)) {
+                        temp[shortTime] = object[item]["temperature"];
+                        pressureStation[shortTime] = object[item]["air_pressure_station"];
+                        rainfall[shortTime] = object[item]["rainfall"];
+                    }
+                }
+            }
+
             $('#lastUpdate').text(lastUpdate);
 
             // Create dataset line graph, temperature

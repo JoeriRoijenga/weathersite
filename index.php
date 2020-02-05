@@ -43,9 +43,8 @@ if ($route) {
     try {
         $controller->{$route->method()}(...$route->options());
     } catch (Exception $exception) {
-        // @TODO handle any leftover error or error page
-        include "views/404.php";
+        (new PageController())->notFound(500);
     }
 } else {
-    include "views/404.php";
+    (new PageController())->notFound(404);
 }
