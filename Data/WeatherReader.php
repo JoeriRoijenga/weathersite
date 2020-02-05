@@ -19,7 +19,11 @@ class WeatherReader extends Reader
      */
     public function __construct($aggregate, $type)
     {
-        parent::__construct('C:\Users\MVISSER-ZEPHYRUS\Desktop\parsed_files');
+        if ($_SERVER['HTTP_HOST'] == 'abc.climate-express.xyz'){
+            parent::__construct('/var/nfs/parsed_files');
+        }else{
+            parent::__construct(__DIR__ . '/../weather_data/weather');
+        }
 
         $this->aggregate = $aggregate;
         $this->type = $type;
