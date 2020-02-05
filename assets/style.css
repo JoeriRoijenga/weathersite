@@ -88,19 +88,18 @@ body {
     padding: 20px;
     background-color: #d9d9d9;
     border-radius: 10px;
-    width: 250px;
+    width: 300px;
 }
 
 .center {
     margin: auto;
-    width: 15%;
     border: 3px solid darkslategrey;
-    padding: 10px;
+    margin-top: 50px;
 }
 
 .center-logo {
     margin: auto;
-    width: 15%;
+    width: 300px;
     padding: 10px;
     height: 80px;
 }
@@ -116,6 +115,7 @@ body {
 .logo-img-login {
     display: inline-block;
     float: left;
+	padding-top: 30px;
 }
 
 #stationName {
@@ -197,4 +197,8 @@ body {
 }
 .dropdown-nopadding {
 	padding-left: 0px;
+}
+
+.table-fix-width{
+	width: auto;
 }
