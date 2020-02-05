@@ -16,7 +16,7 @@ class ApiController extends Controller
         'lat_start' => ['float', 'latitude', '>='],
         'lat_end' => ['float', 'latitude', '<='],
         'long_start' => ['float', 'longitude', '>='],
-        'long_end' => ['float', 'latitude', '<='],
+        'long_end' => ['float', 'longitude', '<='],
     ];
 
     /**
@@ -127,7 +127,6 @@ class ApiController extends Controller
             'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
         ]);
 
-        $ids = false;
         if ($reader->hasFilters()){
             $stations = $reader->readData([], 'id');
             $ids = array_keys($stations);
