@@ -19,7 +19,7 @@ class WeatherReader extends Reader
      */
     public function __construct($aggregate, $type)
     {
-        if ($_SERVER['HTTP_HOST'] == 'abc.climate-express.xyz'){
+        if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'abc.climate-express.xyz'){
             parent::__construct('/var/nfs/parsed_files');
         }else{
             parent::__construct(__DIR__ . '/../weather_data/weather');
@@ -143,11 +143,11 @@ class WeatherReader extends Reader
 
         }
 
-        $columns = $this->getColumns();
+        $allColumns = $this->getColumns();
         foreach ($aggregates as $station => $result) {
             foreach ($result as $aggregate) {
                 foreach ($aggregate['total'] as $key => $value) {
-                    $aggregate['avg'][$key] = round($value / $aggregate['count'], $columns[$key]->getDecimals());
+                    $aggregate['avg'][$key] = round($value / $aggregate['count'], $allColumns[$key]->getDecimals());
                 }
 
                 $index = $aggregate['date'];
@@ -158,7 +158,7 @@ class WeatherReader extends Reader
                     $aggregate[$key] = $value;
                 }
 
-                if (!$last)
+                if (!$last && !in_array('id', $columns))
                     unset($aggregate['id']);
 
                 unset($aggregate['date'], $aggregate['count'], $aggregate['total'], $aggregate['min'], $aggregate['max'], $aggregate['avg']);

@@ -68,6 +68,7 @@ abstract class Controller
             $$key = $value;
         }
 
+        $hasHistorical = file_exists(__DIR__ . '/../assets/historical/' . date('Y-m-d') . '.xml');
         include __DIR__ . '/../views/sections/header.html';
         if ($file != "login") {
             include __DIR__ . '/../views/sections/navbar.php';

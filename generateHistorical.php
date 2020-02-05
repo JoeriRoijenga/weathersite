@@ -11,102 +11,94 @@ spl_autoload_register(function ($className) {
     }
 });
 
-echo "Starting at: " . date("H:i:s") . "\r\n";
 $path = __DIR__ . '/weather_data/historical/';
 
-$today = strtotime('yesterday');
-$time = strtotime('yesterday - 1 month - 1 day');
-foreach (scandir($path) as $file){
-    if (preg_match('/\.csv/', $file)){
-        $date = pathinfo($path . $file)['filename'];
+$startDate = strtotime('yesterday - 1 month');
+$yesterday = strtotime('yesterday');
+echo "Generating data from " . date('Y-m-d', $startDate) . " to " . date('Y-m-d', $yesterday) . "\n";
 
-        if (strtotime($date) < strtotime('yesterday - 1 month - day')){
-            unlink($path . $file);
-        }elseif(strtotime($date) > $time){
-            $time = strtotime($date);
-        }
-    }
-}
-
-$time += 24 * 60 * 60;
-echo "Starting from: " . date('Y-m-d', $time) . "\n";
-
+// Initialize station reader
 $stationReader = new StationReader();
-$stationReader->addFilter('latitude', '>-', -5);
-$stationReader->addFilter('latitude', '<-', 30);
-$ids = array_keys($stationReader->readData([], 'id'));
+$stationReader->addFilter('latitude', '>=', -5);
+$stationReader->addFilter('latitude', '<=', 30);
 
-echo "Limiting stations to: " . count($ids) . "\n";
+$ids = array_keys($stationReader->readData([], 'id'));
+sort($ids);
+$total = count($ids);
+echo "Limiting stations to: " . $total . "\n";
+
+// Free up memory
 unset($stationReader);
 
-while ($time <= $today){
-    $file = null;
-    $date = date('Y-m-d', $time);
-    echo $date . ":\n";
+// Initialize Weather station
+$weatherReader = new WeatherReader('second', 'avg');
+$weatherReader->setStartDate(date("Y-m-d", $startDate));
+$weatherReader->setEndDate(date("Y-m-d", $yesterday));
 
-    $weatherReader = new WeatherReader('10_second', 'avg');
-    $weatherReader->setStartDate($date);
-    $weatherReader->setEndDate($date);
-    $weatherReader->addFilter('id', '=', $ids);
-    $weatherReader->outputTerminalProgress();
-    while (count($results = $weatherReader->readData([])) > 0){
-        if (is_null($file)) {
-            if (file_exists($path . $date . '.csv')) {
-                $file = fopen($path . $date . '.csv', 'a');
-            } else {
-                $file = fopen($path . $date . '.csv', 'w');
-                fwrite($file, "STN,TIME,STP,PRECIPITATION\r\n");
-            }
-        }
+$resultList = [];
+// Get results per each station
+for ($i = 0; $i < $total; $i++){
+    $stationId = $ids[$i];
 
-        foreach ($results as $date => $items) {
-            foreach ($items as $item) {
-                $line = join(',', [$item['id'], $item['time'], $item['air_pressure_station'], $item['rainfall']]) . "\r\n";
-                fwrite($file, $line);
+    $weatherReader->setStations($stationId);
+
+    $results = $weatherReader->readData(['id', 'time', 'rainfall', 'air_pressure_station']);
+    foreach ($results as $date => $dailyResults){
+        foreach ($dailyResults as $result){
+            if (!isset($resultList[$date])){
+                $resultList[$date] = [];
             }
+            if (!isset($resultList[$date][$result['time']])){
+                $resultList[$date][$result['time']] = [];
+            }
+
+            $resultList[$date][$result['time']][] = [
+                'STN' => $result['id'],
+                'TIME' => $result['time'],
+                'STP' => $result['air_pressure_station'],
+                'PRECIPITATION' => $result['rainfall']
+            ];
         }
-        unset($results);
     }
-    echo "\n";
-    if(!is_null($file)){
-        fclose($file);
-        unset($file, $weatherReader);
-    }
-    $time += 24 * 60 * 60;
+
+    echo ($i + 1) . '/' . $total . "\n";
 }
 
 echo "Generating XML file\r\n";
+
+// Initialize XML root
 $doc  = new DomDocument();
 $doc->formatOutput = true;
 $root = $doc->createElement('WEATHER');
 $root = $doc->appendChild($root);
 
+// Append each result as element
+foreach ($resultList as $dateValue => $dailyResults){
+    $date = $doc->createElement("DATE");
+    $date->setAttribute("DATE", $dateValue);
 
-foreach (scandir($path) as $file){
-    if ($file != '.' && $file != '..'){
-        $inputFile  = fopen($path . $file, 'r');
-        $headers = fgetcsv($inputFile);
-        $date = $doc->createElement("DATE");
-        $dateValue = $date->setAttribute("DATE", pathinfo($path . $file)['filename']);
+    foreach ($dailyResults as $timeResults) {
 
-        while (($row = fgetcsv($inputFile)) !== FALSE) {
+        ksort($timeResults);
+        // Sort so XML is in order
+        foreach ($timeResults as $result) {
             $measurement = $doc->createElement('MEASUREMENT');
-            foreach($headers as $i => $header) {
-                $child = $doc->createElement($header);
+            foreach ($result as $key => $value) {
+                $child = $doc->createElement($key);
                 $child = $measurement->appendChild($child);
-                $value = $doc->createTextNode($row[$i]);
+                $value = $doc->createTextNode($value);
                 $value = $child->appendChild($value);
             }
-
-            $date->appendChild($measurement);
         }
-        $root->appendChild($date);
+        $date->appendChild($measurement);
     }
+
+    $root->appendChild($date);
 }
 
+// Write output file
 $xml = $doc->saveXML();
-$handle = fopen(__DIR__ . '/weather_data/historical.xml', "w");
+$handle = fopen(__DIR__ . '/assets/historical/' . date('Y-m-d') . '.xml', "w");
 fwrite($handle, $xml);
 fclose($handle);
 
-echo "Done on: " . date("H:i:s") . "\r\n";

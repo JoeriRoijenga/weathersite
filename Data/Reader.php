@@ -42,6 +42,10 @@ abstract class Reader
         $this->filters[] = [$name, $condition, $value];
     }
 
+    /**
+     * Reader has filters.
+     * @return bool
+     */
     public final function hasFilters()
     {
         return count($this->filters) > 0;
