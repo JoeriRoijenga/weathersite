@@ -197,6 +197,7 @@ body {
 }
 .dropdown-nopadding {
 	padding-left: 0px;
+	z-index: +3;
 }
 
 .table-fix-width{
