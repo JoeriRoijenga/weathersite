@@ -129,9 +129,9 @@ class ApiController extends Controller
 
         $ids = false;
         if ($reader->hasFilters()){
-            $stations = $reader->readData([], 'id');
+            $stations = $reader->readData(["id", "name"], 'id');
             $ids = array_keys($stations);
-            unset($stations, $results);
+            unset($results);
 
             if (count($ids) <= 0){
                 $this->json(['message' => 'no stations not found'], 404);
@@ -160,6 +160,8 @@ class ApiController extends Controller
         foreach ($results as $date => $resultsPerDate){
             foreach ($resultsPerDate as $result){
                 $result['id'] = (int) $result['id'];
+                $result['station'] =  $stations[$result['id']];
+                unset($result["id"]);
                 $result['date'] = $date;
                 $keys = ['id' => 0, 'date' => 1, 'time' => 2];
                 uksort($result, function ($a, $b) use($keys){

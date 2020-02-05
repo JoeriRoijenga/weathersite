@@ -9,8 +9,8 @@ class Database
     {
         $dbhost = "localhost";
         $dbuser = "root";
-        $dbpass = "";
-        $dbname = "abc";
+        $dbpass = "root";
+        $dbname = "abcweather";
 
         $db = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
         if (mysqli_connect_errno()) {
