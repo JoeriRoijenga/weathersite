@@ -25,16 +25,18 @@ class AccountController extends Controller
             }
 
             $input_password = $_POST['password'];
-
-            $sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
-            $data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);
-            if (password_verify($input_password, $data["password"])) {
-                $_SESSION['username'] = $data['username'];
-                $_SESSION['priv_level'] = $data['priv_level'];
-                header("Location: /");
-            } else {
-                $err = 1;
-            }
+			
+			if ($err == 0){
+				$sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
+				$data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);
+				if (password_verify($input_password, $data["password"])) {
+					$_SESSION['username'] = $data['username'];
+					$_SESSION['priv_level'] = $data['priv_level'];
+					header("Location: /");
+				} else {
+					$err = 1;
+				}
+			}
         };
 
         $this->html("login", ['err' => $err]);
