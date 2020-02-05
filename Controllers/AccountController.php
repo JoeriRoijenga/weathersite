@@ -24,8 +24,12 @@ class AccountController extends Controller
                 $err = 1;
             }
 
-            $input_password = $_POST['password'];
-			
+            if ($_POST['password'] != "") {
+                $input_password = $_POST['password'];
+            } else {
+                $err = 1;
+            }
+
 			if ($err == 0){
 				$sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
 				$data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);
