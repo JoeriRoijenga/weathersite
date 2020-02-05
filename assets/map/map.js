@@ -209,13 +209,25 @@ function setup() {
                 coor[1] = Math.round(coor[1] * 100) / 100;
                 coor[0] = Math.round(coor[0] * 100) / 100;
 
+                if(coor[0] < 0){
+                    coor[0] = (0 - coor[0]) + "°W";
+                }else{
+                    coor[0] = coor[0] + "°E";
+                }
+
+                if(coor[1] < 0){
+                    coor[1] = (0 - coor[1]) + "°N";
+                }else{
+                    coor[1] = coor[1] + "°S";
+                }
+
+
                 // Data in popup
                 $(element).popover({
                     placement: 'top',
                     html: true,
                     title: feature.get('name'),
-                    content: "<b>ID:</b> " + feature.get('id') + "<br /> " +
-                        "<b>LAT:</b> " + coor[1] + "<br /><b>LON:</b> " + coor[0]
+                    content: "<b>LAT:</b> " + coor[1] + "<br /><b>LON:</b> " + coor[0]
                 });
                 prevFeature = feature;
                 prevPopup = feature.get('name');

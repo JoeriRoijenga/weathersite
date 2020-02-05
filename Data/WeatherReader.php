@@ -19,7 +19,7 @@ class WeatherReader extends Reader
      */
     public function __construct($aggregate, $type)
     {
-        parent::__construct(__DIR__ . '/../weather_data/weather');
+        parent::__construct('C:\Users\MVISSER-ZEPHYRUS\Desktop\parsed_files');
 
         $this->aggregate = $aggregate;
         $this->type = $type;
@@ -49,7 +49,7 @@ class WeatherReader extends Reader
         return [
             'id' => null,
             'date' => null,
-            'time' => DataType::Integer($position, 2),
+            'time' => DataType::Integer($position, 4),
             'temperature' => DataType::Double($position, 3, 1, true),
             'dew_point' => DataType::Double($position, 3, 1, true),
             'air_pressure_sea' => DataType::Double($position, 3, 1),
@@ -82,6 +82,9 @@ class WeatherReader extends Reader
             switch ($this->aggregate) {
                 case 'second':
                     $time = $result['time'];
+                    break;
+                case '5_second':
+                    $time = substr($result['time'], 0, 7) . (floor(substr($result['time'], -1) / 5) * 5);
                     break;
                 case '10_second':
                     $time = substr($result['time'], 0, 7) . '0';
@@ -226,11 +229,10 @@ class WeatherReader extends Reader
         }
 
         $value = parent::getColumn($file, $base, $name);
-        if ($name == 'time') {
-            $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
-            $minutes = str_pad(floor($value / 60), 2, '0', STR_PAD_LEFT);
-            $seconds = str_pad($value % 60, 2, '0', STR_PAD_LEFT);
-            return $hour . ':' . $minutes . ':' . $seconds;
+        if ($name == 'rainfall'){
+            return $value * 10; // Convert to mm
+        }elseif ($name == 'time') {
+           return date("H:i:s", $value);
         }elseif ($name == 'events') {
             $events = [];
             foreach (['freezing', 'rain', 'snow', 'hail', 'thunder', 'tornado/whirlwind'] as $name) {

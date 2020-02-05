@@ -6,7 +6,10 @@
         </div>
         <div class="col-sm-6" id="graph">
             <div class="row">
-                <div id="labelChart col-md-12"><h1 id="stationName">No Station Chosen</h1></div>
+                <div id="labelChart col-md-12"><h1 id="stationName">No Station selected</h1></div>
+            </div>
+            <div class="row">
+                <p>Latest update at: <span id="lastUpdate">-</span></p>
             </div>
             <div class="row">
                 <section id="tabs" class="project-tab">
@@ -15,9 +18,20 @@
                             <div class="col-md-12">
                                 <nav>
                                     <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-temp" role="tab" aria-controls="nav-home" aria-selected="true">Temperature<span id="temp" class="dot-red"></span></a>
-                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-aps" role="tab" aria-controls="nav-profile" aria-selected="false">Air Pressure<span id="air-pressure-station" class="dot-red"></span></a>
-                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-rain" role="tab" aria-controls="nav-profile" aria-selected="false">Rainfall<span id="rainfall" class="dot-red"></span></a>
+                                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab"
+                                           href="#nav-temp" role="tab" aria-controls="nav-home" aria-selected="true">Temperature
+<!--                                            <span id="temp" class="dot-red"></span>-->
+                                        </a>
+                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab"
+                                           href="#nav-aps" role="tab" aria-controls="nav-profile" aria-selected="false">Air
+                                            Pressure
+<!--                                            <span id="air-pressure-station" class="dot-red"></span>-->
+                                        </a>
+                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab"
+                                           href="#nav-rain" role="tab" aria-controls="nav-profile"
+                                           aria-selected="false">Rainfall
+<!--                                            <span id="rainfall" class="dot-red"></span>-->
+                                        </a>
                                     </div>
                                 </nav>
                                 <div class="tab-content" id="nav-tabContent">

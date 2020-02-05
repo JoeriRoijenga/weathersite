@@ -7,8 +7,9 @@ var stationLabel = document.getElementById("stationName");
 var intervalGraph;
 var requests = [];
 
-// Temporary fake value
-var a = 0;
+var temperatureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', 0.5)';
+var rainfallColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')';
+var pressureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')';
 
 function createTimeArray() {
     var time = {};
@@ -30,11 +31,11 @@ function startChart() {
     var station = document.getElementById('currentStation').value;
 
     if (station != 0) {
-        Get("api/v1/station/" + station + "?group_by=hour");
+        Get("api/v1/station/" + station + "?group_by=5_second&limit=24");
 
         intervalGraph = setInterval(function() {
-            Get("api/v1/station/" + station + "?group_by=hour", true);
-        }, 10000);
+            Get("api/v1/station/" + station + "?group_by=5_second&limit=24", true);
+        }, 5000);
     } else {
         destroyCharts();
     }
@@ -55,8 +56,6 @@ function destroyCharts() {
             request.abort()
         });
 
-        document.getElementById("rainfall").classList.remove('dot-green');
-        document.getElementById("rainfall").classList.add('dot-red')
     }
 }
 
@@ -76,7 +75,9 @@ function createLineGraph(dataset, labels, ctx) {
             labels: labels,
             datasets: dataset
         },
-        options: {}
+        options: {
+            responsiveAnimationDuration: 0
+        }
     });
 }
 
@@ -89,9 +90,12 @@ function createLineGraph(dataset, labels, ctx) {
 function updateLineGraph(chart, dataset, labels) {
     chart.data = {
         labels: labels,
-        datasets: dataset
+        datasets: dataset,
+        options: {
+            responsiveAnimationDuration: 0
+        }
     };
-    chart.update();
+    chart.update(0);
 }
 
 /**
@@ -136,37 +140,46 @@ function Get(jsonURL, update = false){
             var data = JSON.parse(Httpreq.responseText)
 
             // Creating variables for time
-            var temp = createTimeArray();
-            var pressureStation = createTimeArray();
-            var rainfall = createTimeArray();
+            var temp = [];
+            var pressureStation = [];
+            var rainfall = [];
 
             // Retrieving weather object
-            var object = data.item.weather["2020-01-28"];
-
-            // Temporary fake data
-            if (update) {
-                a += 1 ;
+            var date = 0;
+            var lastDate;
+            for (var dateItem in data.item.weather){
+                if (Date.parse(dateItem) > date){
+                    date = Date.parse(dateItem);
+                    lastDate = dateItem;
+                }
             }
+
+            var object = data.item.weather[lastDate];
 
             // Sorting data
-            for (item in object){
-                temp[object[item]["time"].toString().slice(0, -3)] = object[item]["temperature"];
-                pressureStation[object[item]["time"].toString().slice(0, -3)] = object[item]["air_pressure_station"];
-                rainfall[object[item]["time"].toString().slice(0, -3)] = object[item]["rainfall"] + a;
+            var lastUpdate = '-';
+            for (var item in object){
+                if (object.hasOwnProperty(item)) {
+                    temp[object[item]["time"].toString().slice(-5)] = object[item]["temperature"];
+                    pressureStation[object[item]["time"].toString().slice(-5)] = object[item]["air_pressure_station"];
+                    rainfall[object[item]["time"].toString().slice(-5)] = object[item]["rainfall"];
+                    lastUpdate = lastDate + " " + object[item]["time"];
+                    console.log(object[item]["time"]);
+                }
             }
+            $('#lastUpdate').text(lastUpdate);
 
             // Create dataset line graph, temperature
             datasets[0] = [{
-                label: 'Temperature',
-                backgroundColor: 'rgba(0, 0, 0, 0)',
-                borderColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
+                label: 'Temperature (Celcius)',
+                backgroundColor: temperatureColor,
                 data: listComprehension(temp, false)
             }];
 
             // Create dataset bar graph
             datasets[1] = [{
-                label: 'Air Pressure',
-                backgroundColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
+                label: 'Air Pressure (millibar)',
+                backgroundColor: pressureColor,
                 barPercentage: 0.5,
                 barThickness: 6,
                 maxBarThickness: 8,
@@ -176,14 +189,15 @@ function Get(jsonURL, update = false){
 
             // Create dataset line graph, rainfall
             datasets[2] = [{
-                label: 'Rainfall',
-                backgroundColor: 'rgba(0, 0, 0, 0)',
-                borderColor: 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')',
+                label: 'Rainfall (millimeter)',
+                backgroundColor: rainfallColor,
                 data: listComprehension(rainfall, false)
             }];
 
             // Update line graph
             if (update) {
+                updateLineGraph(charts[0], datasets[0], listComprehension(rainfall))
+                updateLineGraph(charts[1], datasets[1], listComprehension(rainfall))
                 updateLineGraph(charts[2], datasets[2], listComprehension(rainfall))
             } else {
                 // Creating temperature
@@ -194,8 +208,6 @@ function Get(jsonURL, update = false){
 
                 // Creating rainfall
                 charts[2] = createLineGraph(datasets[2], listComprehension(rainfall), ctxRainfall);
-                document.getElementById("rainfall").classList.remove('dot-red');
-                document.getElementById("rainfall").classList.add('dot-green');
             }
 
             // Station name

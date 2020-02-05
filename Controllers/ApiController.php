@@ -64,7 +64,7 @@ class ApiController extends Controller
             $endDate = 'today';
 
         $aggregate = $this->input('group_by', 'string');
-        if (!$aggregate || !in_array($aggregate, ['second', 'minute', 'hour']))
+        if (!$aggregate || !in_array($aggregate, ['second', 'minute', 'hour', '5_second', '10_second']))
             $aggregate = 'minute';
         $type = $this->input('group_type', 'string');
         if (!$type || !in_array($type, ['min', 'max', 'avg']))
@@ -85,11 +85,21 @@ class ApiController extends Controller
         $reader->setStations($station['id']);
         $reader->setStartDate($startDate);
         $reader->setEndDate($endDate);
-        $station['weather'] = $reader->readData(['air_pressure_station', 'rainfall']);
+        $station['weather'] = $reader->readData(['temperature', 'air_pressure_station', 'rainfall']);
+
+        $limit = $this->input('limit', 'integer');
+        if ($limit !== false){
+            foreach ($station['weather'] as $date => $value){
+                if (count($value) > $limit){
+                    $station['weather'][$date] = array_slice($value, count($value) - $limit);
+                }
+            }
+        }
 
         $reader = new WeatherReader('second', 'avg');
         $reader->setStations($station['id']);
-        foreach ($reader->readData(['air_pressure_station', 'rainfall'], false, true) as $date => $result){
+
+        foreach ($reader->readData(['temperature', 'air_pressure_station', 'rainfall'], false, true) as $date => $result){
             $result = $result[0];
             unset($result['id']);
             $result['date'] = $date;
@@ -127,6 +137,9 @@ class ApiController extends Controller
                 $this->json(['message' => 'no stations not found'], 404);
                 exit;
             }
+        }else{
+            $this->json(['message' => 'Apply a filter. Unable to request this call for all stations.'], 500.);
+            exit;
         }
 
         $reader = new WeatherReader('second', 'avg');
@@ -134,7 +147,7 @@ class ApiController extends Controller
         if ($ids)
             $reader->setStations($ids);
 
-        $results = $reader->readData(['air_pressure_station', 'rainfall'], false, true);
+        $results = $reader->readData(['temperature', 'air_pressure_station', 'rainfall'], false, true);
         $orderBy = $this->input('order_by', 'string');
         if (!in_array($orderBy, array_keys($reader->getColumns())))
             $orderBy = 'rainfall';
