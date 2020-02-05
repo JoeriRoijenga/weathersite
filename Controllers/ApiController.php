@@ -128,7 +128,7 @@ class ApiController extends Controller
         ]);
 
         if ($reader->hasFilters()){
-            $stations = $reader->readData(["id", "name"], 'id');
+            $stations = $reader->readData(["id", "name", "country"], 'id');
             $ids = array_keys($stations);
             unset($results);
 

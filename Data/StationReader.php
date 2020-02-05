@@ -25,7 +25,7 @@ class StationReader extends Reader
             'latitude' => DataType::Double($pos, 3, 3, true),
             'longitude' => DataType::Double($pos, 3, 3, true),
             'name' => DataType::String($pos, 64),
-            'category_count' => DataType::Integer($pos, 2)
+            'country' => DataType::String($pos, 64)
         ];
     }
 
@@ -59,5 +59,21 @@ class StationReader extends Reader
         }
 
         return $files;
+    }
+
+    /**
+     * Transform value as necessary.
+     * @param $file
+     * @param $base
+     * @param $name
+     * @return bool|mixed
+     */
+    protected function getColumn($file, $base, $name)
+    {
+        $value = parent::getColumn($file, $base, $name);
+        if ($name == 'name' || $name == "country"){
+            $value = ucwords(strtolower($value));
+        }
+        return $value;
     }
 }

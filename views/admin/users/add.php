@@ -1,5 +1,5 @@
 
-<div class="container-fluid w-50">
+<div class="container-fluid w-50 mt-4">
 	<div class="jumbotron">
 	<h1>Add user:</h1>
 	<form action="/admin/user/add" method="post">

@@ -1,5 +1,5 @@
 <div class="container full-screen">
-    <div class="row full-screen">
+    <div class="row full-screen mt-4 mb-4">
         <div class="col-sm-6 full-screen">
             <div id="map" class="map full-screen"><div id="popup"></div></div>
             <input type="hidden" id="currentStation" value="0" onchange="startChart()">
@@ -18,10 +18,7 @@
                             <div class="col-md-12">
                                 <nav>
                                     <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab"
-                                           href="#nav-temp" role="tab" aria-controls="nav-home" aria-selected="true">Temperature
-                                        </a>
-                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab"
+                                        <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab"
                                            href="#nav-aps" role="tab" aria-controls="nav-profile" aria-selected="false">Air
                                             Pressure
                                         </a>
@@ -29,17 +26,20 @@
                                            href="#nav-rain" role="tab" aria-controls="nav-profile"
                                            aria-selected="false">Rainfall
                                         </a>
+                                        <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab"
+                                           href="#nav-temp" role="tab" aria-controls="nav-home" aria-selected="true">Temperature
+                                        </a>
                                     </div>
                                 </nav>
                                 <div class="tab-content" id="nav-tabContent">
-                                    <div class="tab-pane fade show active" id="nav-temp" role="tabpanel" aria-labelledby="nav-home-tab">
-                                        <canvas id="graphTemperature"></canvas>
-                                    </div>
-                                    <div class="tab-pane fade" id="nav-aps" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                    <div class="tab-pane fade show active" id="nav-aps" role="tabpanel" aria-labelledby="nav-profile-tab">
                                         <canvas id="graphAirPressureStation"></canvas>
                                     </div>
                                     <div class="tab-pane fade" id="nav-rain" role="tabpanel" aria-labelledby="nav-profile-tab">
                                         <canvas id="graphRainfall"></canvas>
+                                    </div>
+                                    <div class="tab-pane fade" id="nav-temp" role="tabpanel" aria-labelledby="nav-home-tab">
+                                        <canvas id="graphTemperature"></canvas>
                                     </div>
                                 </div>
                             </div>

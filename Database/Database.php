@@ -9,7 +9,7 @@ class Database
     {
         $dbhost = "localhost";
         $dbuser = "root";
-        $dbpass = "";
+        $dbpass = "root";
         $dbname = "abcweather";
 
         $db = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);

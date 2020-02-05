@@ -20,10 +20,10 @@ if (!empty($_SESSION)){
     <?php endif; ?>
 
     <?php if(isset($priv_level) && $priv_level == 2): ?>
-        <li style="float:right"><a href="#">Admin</a>
+        <li style="float:right"><a href="#">Admin <small>&#9660;</small></a>
 			<ul class="dropdown dropdown-nopadding">
-				<li><a href='/admin/user/add'>Add user</a></li>
-				<li><a href='/admin/users'>List users</a></li>
+                <li><a href='/admin/users'>List users</a></li>
+                <li><a href='/admin/user/add'>Add user</a></li>
 			</ul>
 		</li>
     <?php endif; ?>

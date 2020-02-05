@@ -1,4 +1,4 @@
-<div class="container-fluid w-50">
+<div class="container-fluid w-50 mt-4">
 	<div class="jumbotron">
 
 <h2>User list:</h2>
