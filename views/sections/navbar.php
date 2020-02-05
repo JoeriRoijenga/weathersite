@@ -10,8 +10,12 @@ if (!empty($_SESSION)){
 </div>
 <ul class="nav-menu">
 	<li><a href="/">Home</a></li>
-	<li><a href="/precipitation">Precipitation</a></li>
-    <li><a href="/map">Map</a></li>
+    <?php if(isset($priv_level) && $priv_level >= 1): ?>
+        
+            <li><a href="/precipitation">Precipitation</a></li>
+            <li><a href="/map">Map</a></li>
+
+    <?php endif; ?>
  	<?php if(isset($username)): ?>
         <li style="float:right"><a href="/logout">Logout</a></li>
     <?php else: ?>
