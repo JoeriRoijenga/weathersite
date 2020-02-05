@@ -31,6 +31,15 @@ class PageController extends Controller
 
     public function map()
     {
-        $this->html("map");
+        if (isset($_SESSION['priv_level'])) {
+            if ($_SESSION['priv_level'] > 0) {
+                $this->html("map");
+            }
+        } else {
+            header("Location: /login");
+            exit(401);        
+        }
+
+        
     }
 }
