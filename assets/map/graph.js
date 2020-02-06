@@ -112,7 +112,14 @@ function updateGraph(chart, dataset, labels) {
         labels: labels,
         datasets: dataset,
         options: {
-            responsiveAnimationDuration: 0
+            responsiveAnimationDuration: 0,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
         }
     };
     chart.update(0);
@@ -133,7 +140,15 @@ function createBarGraph(dataset, labels, ctx) {
             labels: labels,
             datasets: dataset
         },
-        options: {}
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
     });
 }
 
@@ -196,7 +211,7 @@ function Get(jsonURL, update = false){
             }
             temp = Object.keys(temp).map(function(key){return temp[key]}).reverse();
             pressureStation = Object.keys(pressureStation).map(function(key){return pressureStation[key]}).reverse();
-            pressureStation = Object.keys(temp).map(function(key){return temp[key]}).reverse();
+            rainfall = Object.keys(rainfall).map(function(key){return rainfall[key]}).reverse();
 
             $('#lastUpdate').text(lastUpdate);
 
