@@ -17,11 +17,11 @@ var pressureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math
  * @returns {[]}
  */
 function createTimeArray(lastDate) {
-    var keys = [];
+    var time = {};
     if (lastDate !== '-'){
         var lastTime = lastDate.split(" ")[1].split(':');
         for (var i = 23; i >= 0; i--){
-            keys[i] =lastTime.join(":");
+            time[lastTime.join(":")] = 0;
 
             lastTime[2] -= 5;
             if (lastTime[2] < 0){
@@ -38,7 +38,7 @@ function createTimeArray(lastDate) {
             lastTime[2] = ("0" + lastTime[2]).substr(-2, 2)
         }
     }
-    return keys;
+    return time;
 }
 
 /**
@@ -176,23 +176,23 @@ function Get(jsonURL, update = false){
                 }
             }
 
-            var keys = createTimeArray(lastUpdate);
-            var temp = [];
-            var pressureStation = [];
-            var rainfall = [];
+            var temp = createTimeArray(lastUpdate);
+            var pressureStation = temp.slice();
+            var rainfall = temp.slice();
 
-            var i = 0;
             for (var item in object){
                 if (object.hasOwnProperty(item)) {
                     var shortTime = object[item]["time"].toString().slice(-8);
-                    if (keys.includes(shortTime)) {
-                        temp[i] = object[item]["temperature"];
-                        pressureStation[i] = object[item]["air_pressure_station"];
-                        rainfall[i] = object[item]["rainfall"];
-                        i++;
+                    if (temp.hasOwnProperty(shortTime)) {
+                        temp[shortTime] = object[item]["temperature"];
+                        pressureStation[shortTime] = object[item]["air_pressure_station"];
+                        rainfall[shortTime] = object[item]["rainfall"];
                     }
                 }
             }
+            temp = temp.values().reverse();
+            pressureStation = pressureStation.values().reverse();
+            rainfall = rainfall.values().reverse();
 
             $('#lastUpdate').text(lastUpdate);
 
