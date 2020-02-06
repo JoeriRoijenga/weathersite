@@ -35,6 +35,8 @@ function createTimeArray(lastDate) {
                     }
                 }
             }
+            lastTime[0] = ("0" + lastTime[0]).substr(-2, 2)
+            lastTime[1] = ("0" + lastTime[1]).substr(-2, 2)
             lastTime[2] = ("0" + lastTime[2]).substr(-2, 2)
         }
     }
