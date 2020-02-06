@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Data\Reader;
 use Data\StationReader;
 use Data\WeatherReader;
 
@@ -20,8 +21,9 @@ class ApiController extends Controller
     ];
 
     /**
-     * @param $reader
-     * @param $keys
+     * Add filters to the reader based on the registered filters and given input.
+     * @param $reader Reader Reader to add the filters to.
+     * @param $keys String filter keys to check.
      */
     private function addFilters(&$reader, $keys)
     {
@@ -34,6 +36,10 @@ class ApiController extends Controller
         }
     }
 
+    /**
+     * Stations API route.
+     * Returns all general information about stations for the given filters.
+     */
     public function stations()
     {
         $reader = new StationReader();
@@ -50,11 +56,17 @@ class ApiController extends Controller
     }
 
     /**
-     * @param $stationId
+     * Station details API route.
+     * Returns all specific information about a station for the given filters.
+     * Includes weather data.
+     *
+     * @param $stationId int Integer which is the station to get information about.
      */
     public function station($stationId)
     {
         $stationId = (int)filter_var($stationId, FILTER_SANITIZE_NUMBER_INT);
+
+        // Check set filters
         $startDate = $this->input('start_date', 'string');
         if(!$startDate)
             $startDate = 'today';
@@ -70,6 +82,7 @@ class ApiController extends Controller
         if (!$type || !in_array($type, ['min', 'max', 'avg']))
             $type = 'avg';
 
+        // Get stations for the request.
         $reader = new StationReader();
         $this->addFilters($reader, ['stn' => $stationId]);
         $results = $reader->readData(['id', 'name', 'latitude', 'longitude']);
@@ -81,6 +94,7 @@ class ApiController extends Controller
         $station = $results[0];
         unset($results, $reader);
 
+        // Get weather data for the given stations.
         $reader = new WeatherReader($aggregate, $type);
         $reader->setStations($station['id']);
         $reader->setStartDate($startDate);
@@ -99,21 +113,6 @@ class ApiController extends Controller
             }
         }
 
-        $reader = new WeatherReader('second', 'avg');
-        $reader->setStations($station['id']);
-
-        foreach ($reader->readData(['temperature', 'air_pressure_station', 'rainfall'], false, true) as $date => $result){
-            $result = $result[0];
-            unset($result['id']);
-            $result['date'] = $date;
-            $keys = ['id' => 0, 'date' => 1, 'time' => 2];
-            uksort($result, function ($a, $b) use($keys){
-                return ($keys[$a] ?? 3) > ($keys[$b] ?? 3);
-            });
-            $station['weather_latest'] = $result;
-        }
-
-
         $this->json([
             'item' => $station,
             'group_by' => $aggregate,
@@ -123,8 +122,13 @@ class ApiController extends Controller
         ]);
     }
 
+    /**
+     * Weather API route.
+     * Returns all weather information based on a latitude or longitude range.
+     */
     public function weather()
     {
+        // Get stations based on the filters.
         $reader = new StationReader();
         $this->addFilters($reader, [
             'stn', 'lat_start', 'lat_end', 'long_start', 'long_end'
@@ -135,6 +139,7 @@ class ApiController extends Controller
             $ids = array_keys($stations);
             unset($results);
 
+            // If there are no stations give a 404.
             if (count($ids) <= 0){
                 $this->json(['message' => 'no stations not found'], 404);
                 exit;
@@ -158,6 +163,7 @@ class ApiController extends Controller
         if ($limit <= 0)
             $limit = 10;
 
+        // Format the results to include station info.
         $weather = [];
         foreach ($results as $date => $resultsPerDate){
             foreach ($resultsPerDate as $result){
