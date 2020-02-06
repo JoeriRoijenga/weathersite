@@ -69,6 +69,12 @@ abstract class Controller
         }
 
         $hasHistorical = file_exists(__DIR__ . '/../assets/historical/' . date('Y-m-d') . '.xml');
+
+        if (!empty($_SESSION)){
+            $username = $_SESSION['username'];
+            $priv_level = $_SESSION['priv_level'];
+        }
+
         include __DIR__ . '/../views/sections/header.html';
         if ($file != "login") {
             include __DIR__ . '/../views/sections/navbar.php';
