@@ -91,6 +91,9 @@ class ApiController extends Controller
         if ($limit !== false){
             foreach ($station['weather'] as $date => $value){
                 if (count($value) > $limit){
+                    usort($value, function ($a, $b){
+                        return strtotime($a['time']) > strtotime($b['time']);
+                    });
                     $station['weather'][$date] = array_slice($value, count($value) - $limit);
                 }
             }
