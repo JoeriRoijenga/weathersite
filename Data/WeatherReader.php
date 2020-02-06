@@ -185,16 +185,21 @@ class WeatherReader extends Reader
             if ($this->stations == 'all' || isset($this->stations[$station])){
 
                 $dateIterator = $iterator->getChildren();
+                $latest = 0;
                 while ($dateIterator->valid()){
                     $date = strtotime($dateIterator->key());
-                    if ($last || $date >= $this->dateStart && $date <= $this->dateEnd){
-
+                    if ($last && $date >= $latest || !$last & $date >= $this->dateStart && $date <= $this->dateEnd){
+                        $latest = $date;
                         $hourIterator = $dateIterator->getChildren();
+                        $hour = 0;
                         while ($hourIterator->valid()){
-                            if ($last)
-                                $files[$s] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
-                            else
-                                $files[] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
+                            if (!$last || $hourIterator->key() >= $hour) {
+                                $hour = $hourIterator->key();
+                                if ($last)
+                                    $files[$s] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
+                                else
+                                    $files[] = '/' . $hourIterator->getSubPath() . '/' . $hourIterator->key();
+                            }
                             $hourIterator->next();
                         }
 
