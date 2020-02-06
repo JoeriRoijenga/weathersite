@@ -4,32 +4,46 @@ namespace Controllers;
 
 use Database\Database;
 
+/**
+ * Contains all the methods for the accounts pages
+ *
+ * Class AccountController
+ * @package Controllers
+ */
 class AccountController extends Controller
 {
-
+    /**
+     * Login check, setting data
+     */
     public function login()
     {
+        // Session send?
         if (!empty($_SESSION)){
             header("Location: /");
             return;
         }
         $err = 0;
 
+        // Getting DB object
         $db = Database::getDB();
 
+        // Checking request mode
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+            // Check and set username
             if (ctype_alnum($_POST['username'])) {
                 $input_username = $_POST['username'];
             } else {
                 $err = 1;
             }
 
+            // Check and set password
             if ($_POST['password'] != "") {
                 $input_password = $_POST['password'];
             } else {
                 $err = 1;
             }
 
+            // Get data from database
 			if ($err == 0){
 				$sql = "SELECT user_id, username, password, priv_level FROM users WHERE username = '$input_username'";
 				$data = mysqli_fetch_array(mysqli_query($db, $sql),MYSQLI_ASSOC);
@@ -43,9 +57,13 @@ class AccountController extends Controller
 			}
         };
 
+        // Send data to html file
         $this->html("login", ['err' => $err]);
     }
 
+    /**
+     * Deleting data for admin
+     */
     public function logout()
     {
         // Initialize the session.

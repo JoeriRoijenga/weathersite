@@ -3,6 +3,7 @@
 namespace Controllers;
 
 /**
+ * Basis controller used, by other controllers
  * Class Controller
  * @package Controllers
  */
@@ -63,7 +64,7 @@ abstract class Controller
      */
     protected function html($file, $variables = [])
     {
-
+        // Checking variables for the page
         foreach ($variables as $key => $value) {
             $$key = $value;
         }

@@ -5,12 +5,14 @@ namespace Routing;
 use Controllers\Controller;
 
 /**
+ *
+ *
  * Class Route
  * @package Routing
  */
 class Route
 {
-
+    // Global variables
     private $controller;
     private $method;
     private $httpMethods = [];
@@ -18,6 +20,7 @@ class Route
 
     /**
      * Route constructor.
+     *
      * @param $controller Controller Controller to call.
      * @param $method string Method name to call in the Controller.
      * @param string $httpMethod string HTTP method to match.
@@ -43,24 +46,40 @@ class Route
         $this->options = $options;
     }
 
+    /**
+     * Set the controller
+     *
+     * @return Controller
+     */
     public function controller()
     {
         return $this->controller;
     }
 
+    /**
+     * Get the right method
+     *
+     * @return string
+     */
     public function method()
     {
         return $this->method;
     }
 
+    /**
+     * set HTTP method
+     * @return array
+     */
     public function httpMethods()
     {
         return $this->httpMethods;
     }
 
+    /**
+     * Set options
+     */
     public function options()
     {
         return $this->options;
     }
-
 }

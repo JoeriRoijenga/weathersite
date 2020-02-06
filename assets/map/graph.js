@@ -7,14 +7,16 @@ var stationLabel = document.getElementById("stationName");
 var intervalGraph;
 var requests = [];
 
+// Standard colors graphs
 var temperatureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', 0.5)';
 var rainfallColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')';
 var pressureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ', ' + Math.floor((Math.random() * 255) + 1) + ')';
 
 /**
  * Create time array based on the last datetime
+ *
  * @param lastDate
- * @returns {[]}
+ * @returns {{}}
  */
 function createTimeArray(lastDate) {
     var time = {};
@@ -72,7 +74,6 @@ function destroyCharts() {
         requests.forEach(function(request) {
             request.abort()
         });
-
     }
 }
 
@@ -82,7 +83,6 @@ function destroyCharts() {
  * @param dataset
  * @param labels
  * @param ctx
- * @param update
  * @returns {Chart}
  */
 function createLineGraph(dataset, labels, ctx) {
@@ -99,12 +99,13 @@ function createLineGraph(dataset, labels, ctx) {
 }
 
 /**
+ * Updating graphic live
  *
  * @param chart
  * @param dataset
  * @param labels
  */
-function updateLineGraph(chart, dataset, labels) {
+function updateGraph(chart, dataset, labels) {
     chart.data = {
         labels: labels,
         datasets: dataset,
@@ -225,9 +226,9 @@ function Get(jsonURL, update = false){
             // Update line graph
             var labels = listComprehension(keys).reverse();
             if (update) {
-                updateLineGraph(charts[0], datasets[0], labels);
-                updateLineGraph(charts[1], datasets[1], labels);
-                updateLineGraph(charts[2], datasets[2], labels);
+                updateGraph(charts[0], datasets[0], labels);
+                updateGraph(charts[1], datasets[1], labels);
+                updateGraph(charts[2], datasets[2], labels);
             } else {
                 // Creating temperature
                 charts[0] = createLineGraph(datasets[0], labels, ctxTemperature);
@@ -245,6 +246,7 @@ function Get(jsonURL, update = false){
     }
 
     /**
+     * List comprehension on array
      *
      * @param data
      * @param key

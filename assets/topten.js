@@ -11,30 +11,34 @@ function Get(jsonURL, tableBody){
     Httpreq.send();
     Httpreq.onreadystatechange=function() {
         if (this.readyState === 4 && this.status === 200) {
+            // Retrieving data
             var data = JSON.parse(Httpreq.responseText);
             var name, country, rainfall = null
-
             var current = false;
+
+            // Looping thorough data
             for (var i = 0; i < data.items.length; i++) {
                 var newRow;
+
+                // Check if row already exists
                 if (tableBody.children.hasOwnProperty(i)){
                     newRow = tableBody.children[i];
                     newRow.innerHTML = "";
                 }else{
                     newRow = tableBody.insertRow();
                 }
+
+                // Creating cells
                 var newName = newRow.insertCell(0);
                 var newCountry = newRow.insertCell(1);
                 var newRainfall = newRow.insertCell(2);
 
-                var nameStr = data.items[i]["station"]["name"];
-
-                var countryStr = data.items[i]["station"]["country"];
-
-                name = document.createTextNode(nameStr);
-                country = document.createTextNode(countryStr);
+                // Creating textnodes for the table cell
+                name = document.createTextNode(data.items[i]["station"]["name"]);
+                country = document.createTextNode(data.items[i]["station"]["country"]);
                 rainfall = document.createTextNode(data.items[i]["rainfall"] + " mm");
 
+                // Adding text nodes to the table cell
                 newName.appendChild(name);
                 newCountry.appendChild(country);
                 newRainfall.appendChild(rainfall);

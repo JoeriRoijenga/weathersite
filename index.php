@@ -12,8 +12,10 @@ spl_autoload_register(function ($className) {
     }
 });
 
+// Start session
 session_start();
 
+// Create route
 $router = new Router();
 
 // Static pages
@@ -36,15 +38,20 @@ $router->register('/api/v1/station/?', ApiController::class, 'station');
 $router->register('/api/v1/weather/latest', ApiController::class, 'weather');
 
 
+// Check if route exists
 $route = $router->match();
 if ($route) {
+    // Set class name
     $className = $route->controller();
     $controller = new $className;
+
+    // Call page
     try {
         $controller->{$route->method()}(...$route->options());
     } catch (Exception $exception) {
         (new PageController())->notFound(500);
     }
 } else {
+    // Page not found, 404 error
     (new PageController())->notFound(404);
 }
