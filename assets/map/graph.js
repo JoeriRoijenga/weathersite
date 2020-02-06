@@ -17,11 +17,11 @@ var pressureColor = 'rgb(' + Math.floor((Math.random() * 255) + 1) + ', ' + Math
  * @returns {[]}
  */
 function createTimeArray(lastDate) {
-    var time = [];
+    var keys = [];
     if (lastDate !== '-'){
         var lastTime = lastDate.split(" ")[1].split(':');
         for (var i = 23; i >= 0; i--){
-            time[lastTime.join(":")] = 0;
+            keys[i] =lastTime.join(":");
 
             lastTime[2] -= 5;
             if (lastTime[2] < 0){
@@ -38,7 +38,7 @@ function createTimeArray(lastDate) {
             lastTime[2] = ("0" + lastTime[2]).substr(-2, 2)
         }
     }
-    return time;
+    return keys;
 }
 
 /**
@@ -176,17 +176,20 @@ function Get(jsonURL, update = false){
                 }
             }
 
-            var temp = createTimeArray(lastUpdate);
-            var pressureStation = temp.slice();
-            var rainfall = temp.slice();
+            var keys = createTimeArray(lastUpdate);
+            var temp = [];
+            var pressureStation = [];
+            var rainfall = [];
 
+            var i = 0;
             for (var item in object){
                 if (object.hasOwnProperty(item)) {
                     var shortTime = object[item]["time"].toString().slice(-8);
-                    if (temp.hasOwnProperty(shortTime)) {
-                        temp[shortTime] = object[item]["temperature"];
-                        pressureStation[shortTime] = object[item]["air_pressure_station"];
-                        rainfall[shortTime] = object[item]["rainfall"];
+                    if (keys.includes(shortTime)) {
+                        temp[i] = object[item]["temperature"];
+                        pressureStation[i] = object[item]["air_pressure_station"];
+                        rainfall[i] = object[item]["rainfall"];
+                        i++;
                     }
                 }
             }
