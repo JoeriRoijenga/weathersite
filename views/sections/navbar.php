@@ -1,9 +1,3 @@
-<?php
-if (!empty($_SESSION)){
-    $username = $_SESSION['username'];
-    $priv_level = $_SESSION['priv_level'];
-}
-?>
 <div class="header">
     <div class="logoimg"><img src="/assets/abclogo.svg" alt="logo" height="60" about="Logo ABC"/></div>
     <div class="logotext">ABC</div>

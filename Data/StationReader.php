@@ -35,6 +35,7 @@ class StationReader extends Reader
      */
     protected function getFiles($last = false)
     {
+        // Split up files for speed purposes.
         $files = [
             'ne' => '/stations-ne.dat',
             'nw' => '/stations-nw.dat',
@@ -42,6 +43,7 @@ class StationReader extends Reader
             'sw' => '/stations-sw.dat'
         ];
 
+        // Get file based on the latitude or longitude settings.
         foreach ($this->getFilters() as $filter) {
             if ($filter[0] == 'latitude') {
                 if ($filter[1] == '>=' && $filter[2] >= 0) {

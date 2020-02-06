@@ -9,6 +9,7 @@ namespace Data;
 class DataType
 {
 
+    // Available data types.
     private const INTEGER = 0;
     private const DOUBLE = 1;
     private const STRING = 2;
@@ -22,9 +23,9 @@ class DataType
 
     /**
      * DataType constructor.
-     * @param $type
-     * @param $position
-     * @param $length
+     * @param $type int Integer which should correspond to a type in this class.
+     * @param $position int Integer which represents the position in a byte row.
+     * @param $length int Integer which represents the length of the data in bytes.
      */
     private function __construct($type, &$position, $length)
     {
@@ -36,10 +37,12 @@ class DataType
     }
 
     /**
-     * @param $position
-     * @param $length
-     * @param bool $signed
-     * @return DataType
+     * Create an Integer data type.
+     *
+     * @param $position int Integer which represents the position in a byte row.
+     * @param $length int Integer which represents the length of the data in bytes.
+     * @param bool $signed If the numeric value is signed.
+     * @return DataType Created data type.
      */
     public static function Integer(&$position, $length, $signed = false)
     {
@@ -50,11 +53,13 @@ class DataType
     }
 
     /**
-     * @param $position
-     * @param $length
-     * @param $decimals
-     * @param bool $signed
-     * @return DataType
+     * Create an Double data type.
+     *
+     * @param $position int Integer which represents the position in a byte row.
+     * @param $length int Integer which represents the length of the data in bytes.
+     * @param $decimals int Amount of decimals in the value.
+     * @param bool $signed If the numeric value is signed.
+     * @return DataType Created data type.
      */
     public static function Double(&$position, $length, $decimals, $signed = false)
     {
@@ -65,9 +70,11 @@ class DataType
     }
 
     /**
-     * @param $position
-     * @param $length
-     * @return DataType
+     * Create an Integer data type.
+     *
+     * @param $position int Integer which represents the position in a byte row.
+     * @param $length int Integer which represents the length of the data in bytes.
+     * @return DataType Created data type.
      */
     public static function String(&$position, $length)
     {
@@ -90,8 +97,8 @@ class DataType
     }
 
     /**
-     * @param $value
-     * @return bool|float|int|string
+     * @param $value String byte value to be decoded.
+     * @return mixed Decoded value.
      */
     public function decodeValue($value)
     {

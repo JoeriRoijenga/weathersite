@@ -17,7 +17,7 @@ abstract class Reader
 
     /**
      * Reader constructor.
-     * @param $root
+     * @param $root String Base path.
      */
     protected function __construct($root)
     {
@@ -33,9 +33,9 @@ abstract class Reader
     public abstract function getColumns();
 
     /**
-     * @param $name
-     * @param $condition
-     * @param $value
+     * @param $name String Name of the column
+     * @param $condition String Condition to which the value should hold true.
+     * @param $value mixed Value of the condition to compare to.
      */
     public final function addFilter($name, $condition, $value)
     {
@@ -44,7 +44,7 @@ abstract class Reader
 
     /**
      * Reader has filters.
-     * @return bool
+     * @return bool Boolean if the reader has filters.
      */
     public final function hasFilters()
     {
@@ -85,6 +85,8 @@ abstract class Reader
     {
         $file = fopen($this->root . $fileName, "r");
         $size = fstat($file)['size'];
+
+        // If it is the last set the current position to the last row.
         $base = $last ? ($size - $this->getLength()) : 0;
 
         while ($base < $size) {
@@ -94,6 +96,8 @@ abstract class Reader
                 foreach ($columns as $column) {
                     $result[$column] = $this->getColumn($file, $base, $column);
                 }
+
+                // Set all results based on a column or in general.
                 if ($key == false || $this->getColumn($file, $base, $key) == false) {
                     $results[] = $result;
                 } else {
@@ -154,12 +158,15 @@ abstract class Reader
         if (!array_key_exists($name, $this->columns)) {
             return false;
         }
+
+        // Cache value so it doesn't have to be decoded multiple times.
         if (array_key_exists($name, $this->temp_cache)) {
             return $this->temp_cache[$name];
         }
 
         $type = $this->columns[$name];
 
+        // Go to position to read.
         fseek($file, $base + $type->getPosition());
         $value = fread($file, $type->getLength());
 
@@ -185,15 +192,6 @@ abstract class Reader
     protected function getLength()
     {
         return $this->length;
-    }
-
-    /**
-     * @param $path
-     * @return array
-     */
-    protected final function list($path)
-    {
-        return array_diff(scandir($path), ['.', '..']);
     }
 
 }

@@ -16,29 +16,37 @@ class WeatherReader extends Reader
 
     /**
      * WeatherReader constructor.
+     * @param $aggregate
+     * @param $type
      */
     public function __construct($aggregate, $type)
     {
-        if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'abc.climate-express.xyz'){
-            parent::__construct('/var/nfs/parsed_files');
-        }else{
-            parent::__construct(__DIR__ . '/../weather_data/weather');
-        }
+        parent::__construct(__DIR__ . '/../weather_data/weather');
 
         $this->aggregate = $aggregate;
         $this->type = $type;
     }
 
+    /**
+     * Set the stations to read.
+     * @param $stations int|array Stations to get the data from.
+     */
     public function setStations($stations)
     {
         $this->stations = is_array($stations) ? array_flip($stations) : [$stations => true];
     }
 
+    /**
+     * @param $startDate
+     */
     public function setStartDate($startDate)
     {
         $this->dateStart = strtotime($startDate);
     }
 
+    /**
+     * @param $endDate
+     */
     public function setEndDate($endDate)
     {
         $this->dateEnd = strtotime($endDate);
@@ -83,6 +91,8 @@ class WeatherReader extends Reader
 
         foreach ($results as $result) {
             $time = '';
+
+            // Set key based on the aggregate type.
             switch ($this->aggregate) {
                 case 'second':
                     $time = $result['time'];
@@ -125,6 +135,7 @@ class WeatherReader extends Reader
                 unset($result['events']);
             }
 
+            // Get avg, min, max and values.
             foreach ($result as $key => $value) {
                 if (!isset($aggregates[$id][$time]['total'][$key])) {
                     $aggregates[$id][$time]['total'][$key] = $value;
@@ -144,6 +155,8 @@ class WeatherReader extends Reader
         }
 
         $allColumns = $this->getColumns();
+
+        // Remove aggregate values to only one per key.
         foreach ($aggregates as $station => $result) {
             foreach ($result as $aggregate) {
                 foreach ($aggregate['total'] as $key => $value) {
@@ -182,17 +195,23 @@ class WeatherReader extends Reader
         $s = 0;
         while ($iterator->valid()){
             $station = $iterator->key();
+
+            // Filter on stations ids.
             if ($this->stations == 'all' || isset($this->stations[$station])){
 
                 $dateIterator = $iterator->getChildren();
                 $latest = 0;
                 while ($dateIterator->valid()){
                     $date = strtotime($dateIterator->key());
+
+                    // Check for which date the files should be gotten.
                     if ($last && $date >= $latest || !$last & $date >= $this->dateStart && $date <= $this->dateEnd){
                         $latest = $date;
                         $hourIterator = $dateIterator->getChildren();
                         $hour = 0;
                         while ($hourIterator->valid()){
+
+                            // Check if only the last hour should be read.
                             if (!$last || $hourIterator->key() >= $hour) {
                                 $hour = $hourIterator->key();
                                 if ($last)
@@ -221,12 +240,6 @@ class WeatherReader extends Reader
      * @param $name
      * @return array|bool|int|mixed|string
      */
-    /**
-     * @param $file
-     * @param $base
-     * @param $name
-     * @return array|bool|int|mixed|string
-     */
     protected function getColumn($file, $base, $name)
     {
         list($station, $date, $hour) = array_slice(explode('/', stream_get_meta_data($file)['uri']), -3);
@@ -243,6 +256,8 @@ class WeatherReader extends Reader
         }elseif ($name == 'time') {
            return date("H:i:s", $value);
         }elseif ($name == 'events') {
+
+            // Set event values as an array.
             $events = [];
             foreach (['freezing', 'rain', 'snow', 'hail', 'thunder', 'tornado/whirlwind'] as $name) {
                 $events[$name] = $value & 0xE0 ? true : false;
