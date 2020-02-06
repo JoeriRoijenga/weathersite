@@ -176,9 +176,10 @@ function Get(jsonURL, update = false){
                 }
             }
 
-            var temp = createTimeArray(lastUpdate);
-            var pressureStation = Object.assign({}, temp);
-            var rainfall = Object.assign({}, temp);
+            var keys = createTimeArray(lastUpdate);
+            var temp = Object.assign({}, keys);
+            var pressureStation = Object.assign({}, keys);
+            var rainfall = Object.assign({}, keys);
 
             for (var item in object){
                 if (object.hasOwnProperty(item)) {
@@ -222,19 +223,20 @@ function Get(jsonURL, update = false){
             }];
 
             // Update line graph
+            var labels = listComprehension(keys).reverse();
             if (update) {
-                updateLineGraph(charts[0], datasets[0], listComprehension(rainfall))
-                updateLineGraph(charts[1], datasets[1], listComprehension(rainfall))
-                updateLineGraph(charts[2], datasets[2], listComprehension(rainfall))
+                updateLineGraph(charts[0], datasets[0], labels);
+                updateLineGraph(charts[1], datasets[1], labels);
+                updateLineGraph(charts[2], datasets[2], labels);
             } else {
                 // Creating temperature
-                charts[0] = createLineGraph(datasets[0], listComprehension(temp), ctxTemperature);
+                charts[0] = createLineGraph(datasets[0], labels, ctxTemperature);
 
                 // Creating air pressure station
-                charts[1] = createBarGraph(datasets[1], listComprehension(pressureStation), ctxAirPressureStation);
+                charts[1] = createBarGraph(datasets[1], labels, ctxAirPressureStation);
 
                 // Creating rainfall
-                charts[2] = createLineGraph(datasets[2], listComprehension(rainfall), ctxRainfall);
+                charts[2] = createLineGraph(datasets[2], labels, ctxRainfall);
             }
 
             // Station name
