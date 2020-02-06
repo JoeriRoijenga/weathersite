@@ -177,8 +177,8 @@ function Get(jsonURL, update = false){
             }
 
             var temp = createTimeArray(lastUpdate);
-            var pressureStation = temp.slice();
-            var rainfall = temp.slice();
+            var pressureStation = Object.assign({}, temp);
+            var rainfall = Object.assign({}, temp);
 
             for (var item in object){
                 if (object.hasOwnProperty(item)) {
@@ -190,9 +190,9 @@ function Get(jsonURL, update = false){
                     }
                 }
             }
-            temp = temp.values().reverse();
-            pressureStation = pressureStation.values().reverse();
-            rainfall = rainfall.values().reverse();
+            temp = Object.keys(temp).map(function(key){return temp[key]}).reverse();
+            pressureStation = Object.keys(pressureStation).map(function(key){return pressureStation[key]}).reverse();
+            pressureStation = Object.keys(temp).map(function(key){return temp[key]}).reverse();
 
             $('#lastUpdate').text(lastUpdate);
 
