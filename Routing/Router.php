@@ -12,7 +12,7 @@ use const INPUT_SERVER;
  */
 class Router
 {
-
+    // Constant global variables
     const GET = 'GET';
     const POST = 'POST';
 
@@ -38,6 +38,7 @@ class Router
      */
     public function match()
     {
+        // Check url GET
         $url = $_GET['req'] ?? '/';
         if (substr($url, 0, 1) !== '/') {
             $url = '/' . $url;
@@ -45,6 +46,7 @@ class Router
 
         $httpMethod = strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_SPECIAL_CHARS));
 
+        // Loop thorough the routes
         foreach ($this->routes as $route => $method) {
             $test = '/^' . preg_replace('/\?/', '([^\/]+)', preg_replace('/\//', '\/', $route)) . '$/';
             if (preg_match($test, $url, $options)) {
@@ -63,5 +65,4 @@ class Router
 
         return false;
     }
-
 }

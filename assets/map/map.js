@@ -1,10 +1,11 @@
-
+// Global variables
 var stations;
 var markers = new ol.Collection();
 
 /**
  * Generate Iconstyle with SVG inline icon.
  * Inline icon to make it dynamic.
+ *
  * @param type 1 = default, 2 = selected
  * @param count Count to show within the marker.
  * @returns {ol.style.Style}
@@ -62,27 +63,35 @@ function Get(jsonURL){
 /**
  * Reload all markers on the map.
  * All current markers are destroyed and new ones are placed.
+ *
  * @param map
  * @param prevPopup
  */
 function refreshMarkers(map, prevPopup) {
+    // Set variables
     var boundary = map.getView().calculateExtent(map.getSize());
     var groupBy = Math.trunc((boundary[2] - boundary[0]) / 10);
     var groups = {};
     markers.clear();
 
+    // Loop thorough stations
     for (var i = 0; i < stations.length; i++) {
+        // Set location
         var location = ol.proj.fromLonLat([stations[i]["longitude"], stations[i]["latitude"]]);
 
+        // Check location and boundaries
         if (location[0] >= boundary[0] && location[0] <= boundary[2] && location[1] >= boundary[1] && location[1] <= boundary[3]){
             var point = new ol.geom.Point(location);
             var A0 = Math.trunc(point.flatCoordinates[0] / groupBy);
             var A1 = Math.trunc(point.flatCoordinates[1] / groupBy);
             var key = A0 + "-" + A1;
+
+            // Check zoom
             if (map.getView().getZoom() >= 7){
                 key += "_" + i;
             }
 
+            // Checking object groups if contains marker/station
             if (groups.hasOwnProperty(key)){
                 groups[key].pointers[groups[key].pointers.length] = [stations[i]["longitude"], stations[i]["latitude"]];
                 groups[key].locations[groups[key].locations.length] = location;
@@ -95,9 +104,12 @@ function refreshMarkers(map, prevPopup) {
             }
         }
     }
+
+    // Loop thorough the group
     for(key in groups){
         if (groups.hasOwnProperty(key)){
             var iconFeature;
+            // Check pointers
             if (groups[key].pointers.length > 1){
                 var long = 0;
                 var lat = 0;
@@ -108,29 +120,38 @@ function refreshMarkers(map, prevPopup) {
                 long /= groups[key].locations.length;
                 lat /= groups[key].locations.length;
 
+                // Set icon feature
                 iconFeature = new ol.Feature({
                     id: key,
                     name: 'grouped_pointer',
                     geometry: new ol.geom.Point([long, lat])
                 });
+
+                // Set style
                 iconFeature.setStyle(getIconStyle(1, groups[key].locations.length));
             }else{
+                // Set icon feature
                 iconFeature = new ol.Feature({
                     geometry: new ol.geom.Point(ol.proj.fromLonLat(groups[key].pointers[0])),
                     name: stations[groups[key].index]["name"],
                     id: stations[groups[key].index]["id"]
                 });
+
+                // Set style
                 iconFeature.setStyle(getIconStyle(
                     stations[groups[key].index]["name"] === prevPopup ? 2 : 1
                 , 1));
             }
+
+            // Set markers
             markers.push(iconFeature);
         }
     }
-
 }
 
-// Setup for the map
+/**
+ * Setup for the map
+ */
 function setup() {
     var vectorLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
@@ -262,5 +283,6 @@ function setup() {
         currentStation.dispatchEvent(new Event('change'));
     }
 }
+
 // Start
 Get("api/v1/stations");
